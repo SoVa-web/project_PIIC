@@ -1,4 +1,5 @@
 import itertools
+import random
 from typing import List
 
 import pygame
@@ -6,6 +7,7 @@ import pygame
 from game_object import Vec2
 from game_object.barrier.wall import Wall
 from game_object.player import Player
+from config import FIELD_W_SIZE, FIELD_H_SIZE
 
 line_color = (0, 0, 0)
 
@@ -17,6 +19,11 @@ class Field:
         self.h_size = h_size
         self.players: List[Player] = [Player(self)]
         self.barriers = [Wall(Vec2(3, 3))]
+        self.num_block = 150
+
+        while self.num_block!=0:
+             self.num_block-=1
+             self.barriers.append(Wall(Vec2(random.randint(1, FIELD_W_SIZE), random.randint(1, FIELD_H_SIZE))))
 
         for player in self.players:
             self.sprites.add(player.sprite)

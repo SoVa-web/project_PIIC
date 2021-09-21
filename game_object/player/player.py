@@ -13,6 +13,7 @@ FIELD_H_SIZE = 20
 #from config import WIDTH, HEIGHT
 from game_object.game_obj import GameObjectSprite
 from game_object.vec2 import Vec2
+from game_object.bullet.bullet import Bullet
 
 if TYPE_CHECKING:
     from game_object.field import Field
@@ -66,9 +67,14 @@ class PlayerKeyProcessor:
             pygame.K_DOWN: Vec2(x=-0, y=+1)
         }
         self.is_key_pressed = {}
+        self.is_space_pressed = False
+        
 
     def process_key_down_event(self, event):
+        print(event.key)
         self.is_key_pressed[event.key] = True
+        if event.key == 32:
+            self.is_space_pressed = True
 
     def process_key_up_event(self, event):
         self.is_key_pressed[event.key] = False
@@ -88,9 +94,17 @@ class Player:
         self.pos = pos
         self.sprite = PlayerSprite(Vec2(1, 1), 'player.png', parent=self)
         self.key_processor = PlayerKeyProcessor(parent=self)
+        self.bullets =  []
 
     def move(self):
         next_pos = self.pos + self.key_processor.get_vector()
         if self.parent.can_move_to_pos(next_pos):
             self.pos = next_pos
         self.sprite.update_field_pos(self.pos)
+
+    def shot(self):
+        if self.key_processor.is_space_pressed:
+            self.bullets.append(Bullet(Vec2(self.pos.x+1, self.pos.y+1)))
+
+
+
