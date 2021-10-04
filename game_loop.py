@@ -6,6 +6,9 @@ from game_object.field import Field
 
 pygame.init()
 
+
+#displaying the logo and name of the game
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Танчики")
 pygame.display.set_icon(pygame.image.load('data/icon/gamelogo.png'))
@@ -18,32 +21,40 @@ class GameLoop:
         self.field = Field(config.FIELD_W_SIZE, config.FIELD_H_SIZE)
 
     def process_events(self):
-        for event in pygame.event.get():
+        for event in pygame.event.get(): #--event queue--
+
+            #--if we click "Close Window"--
             if event.type == pygame.QUIT:
                 self.is_running = False
 
+            #--if we pressed a key--
             if event.type == pygame.KEYDOWN:
-                for player in self.field.players:
+                for player in self.field.players: #перевірити правильність, щоб не всі одночасно рухались 
                     player.key_processor.process_key_down_event(event)
+                    #маємо передавати в балет теж
 
+            #--if we stopped pressing a key--
             if event.type == pygame.KEYUP:
                 for player in self.field.players:
                     player.key_processor.process_key_up_event(event)
+                     #маємо передавати в балет теж
 
     def start(self):
         self.is_running = True
         frame = 0
-
+       
         while self.is_running:
             frame += 1
             self.clock.tick(FPS)
             self.process_events()
             self.field.draw(screen)
+            
             if frame == config.MOVE_EVERY_NTH_FRAME:
-                for player in self.field.players:
+                for player  in self.field.players:
                     player.move()
-                    player.shot()
+                    #player.shot()
                 frame = 0
+
             self.field.sprites.update()
             self.field.sprites.draw(screen)
             pygame.display.flip()

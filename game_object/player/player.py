@@ -2,15 +2,8 @@ from typing import TYPE_CHECKING
 
 import pygame
 
-FPS = 60
-WIDTH = 700
-HEIGHT = 700
-MOVE_EVERY_NTH_FRAME = 6
-FIELD_W_SIZE = 20
-FIELD_H_SIZE = 20
 
-
-#from config import WIDTH, HEIGHT
+from config import WIDTH, HEIGHT
 from game_object.game_obj import GameObjectSprite
 from game_object.vec2 import Vec2
 from game_object.bullet.bullet import Bullet
@@ -33,22 +26,19 @@ class PlayerSprite(GameObjectSprite):
 
     def scale_image(self):
         image = pygame.transform.scale(self.orig_image, (self.cell_size, self.cell_size))
-        for angle in range(0, 360, 45):
+        for angle in range(0, 360, 90):
             self.view_directions[angle] = pygame.transform.rotate(image, -angle)
 
     def get_view_direction_image(self):
         vec = self.parent.key_processor.get_vector()
-        if vec == Vec2(0, 0):
-            return
+        for v in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1), Vec2(0, 0)]):
+            if v == vec:
+                return 
         view_direction_angle = {
             Vec2(x=0, y=-1): 0,
-            Vec2(x=1, y=-1): 45,
-            Vec2(x=1, y=0): 90,
-            Vec2(x=1, y=+1): 135,
+            Vec2(x=+1, y=0): 90,
             Vec2(x=0, y=+1): 180,
-            Vec2(x=-1, y=+1): 225,
             Vec2(x=-1, y=0): 270,
-            Vec2(x=-1, y=-1): 315,
         }[vec]
         self.scaled_image = self.view_directions[view_direction_angle]
 
@@ -67,14 +57,12 @@ class PlayerKeyProcessor:
             pygame.K_DOWN: Vec2(x=-0, y=+1)
         }
         self.is_key_pressed = {}
-        self.is_space_pressed = False
         
 
     def process_key_down_event(self, event):
-        print(event.key)
         self.is_key_pressed[event.key] = True
-        if event.key == 32:
-            self.is_space_pressed = True
+        if event.key == pygame.K_SPACE:
+            self.parent.shot()
 
     def process_key_up_event(self, event):
         self.is_key_pressed[event.key] = False
@@ -88,23 +76,34 @@ class PlayerKeyProcessor:
 
 
 class Player:
-    def __init__(self, parent: 'Field', pos: Vec2 = Vec2(), hp=10):
+    def __init__(self, parent: 'Field', pos: Vec2 = Vec2()):
         self.parent = parent
-        self.hp = hp
         self.pos = pos
         self.sprite = PlayerSprite(Vec2(1, 1), 'player.png', parent=self)
         self.key_processor = PlayerKeyProcessor(parent=self)
-        self.bullets =  []
+        self.last_direction = Vec2(0, 1)
+        
 
     def move(self):
+        #--we forbid moving diagonally--
+        for vec in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1)]):
+            if vec == self.key_processor.get_vector():
+                return 
         next_pos = self.pos + self.key_processor.get_vector()
-        if self.parent.can_move_to_pos(next_pos):
+        if not self.key_processor.get_vector() == Vec2(0, 0):
+            self.last_direction = self.key_processor.get_vector()
+        if self.parent.can_move_to_pos(next_pos) :
             self.pos = next_pos
         self.sprite.update_field_pos(self.pos)
 
+
     def shot(self):
-        if self.key_processor.is_space_pressed:
-            self.bullets.append(Bullet(Vec2(self.pos.x+1, self.pos.y+1)))
+        bullet = Bullet(self, self.pos+self.last_direction, self.last_direction)
+        bullet.sprite.update_field_pos(self.pos+self.last_direction)
+        self.parent.bullets.append(bullet)
+        self.parent.add_bullet_in_field(bullet)
+        
+            
 
 
 
