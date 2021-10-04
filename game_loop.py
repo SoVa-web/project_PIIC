@@ -52,7 +52,8 @@ class GameLoop:
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
                     player.move()
-                    #player.shot()
+                for bullet in self.field.bullets:
+                    bullet.bullet_move()
                 frame = 0
 
             self.field.sprites.update()

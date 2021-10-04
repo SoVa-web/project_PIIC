@@ -102,6 +102,7 @@ class Player:
         bullet.sprite.update_field_pos(self.pos+self.last_direction)
         self.parent.bullets.append(bullet)
         self.parent.add_bullet_in_field(bullet)
+
         
             
 
