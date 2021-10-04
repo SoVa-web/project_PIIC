@@ -22,11 +22,7 @@ class BulletSprite(GameObjectSprite):
         if dir == Vec2(-1, 0):
             self.image = self.orig_image = pygame.transform.rotate(self.orig_image, 270)
         self.parent = parent
-
-        self.view_directions = {}
-        self.view_direction_angle = 0
-
-        self.rect.center = (WIDTH / 2, HEIGHT / 2)
+        
         self.pos = pos
         self.dir = dir
 
@@ -40,6 +36,3 @@ class Bullet:
         self.sprite = BulletSprite(self.pos, self.dir, 'shotOrange.png', parent=self)
 
 
-#    def update(self):
-
-#аналогічна реалізація що і в гравцеві
