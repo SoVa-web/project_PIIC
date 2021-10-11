@@ -43,6 +43,8 @@ class GameLoop:
        
         while self.is_running:
             frame += 1
+            for i in self.field.explosions:
+                i.timer -= 1
             self.clock.tick(FPS)
             self.process_events()
             self.field.draw(screen)
@@ -52,6 +54,8 @@ class GameLoop:
                     player.move()
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
+                for explosion in self.field.explosions:
+                    explosion.delete()
                 frame = 0
 
             self.field.sprites.update()

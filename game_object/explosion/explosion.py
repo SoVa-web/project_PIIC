@@ -2,7 +2,7 @@ import pygame
 from typing import TYPE_CHECKING
 from game_object import Vec2
 from game_object.game_obj import GameObjectSprite
-from config import WIDTH, HEIGHT
+from config import TIMER_EXPLOSION
 
 
 if TYPE_CHECKING:
@@ -19,3 +19,9 @@ class Explosion:
         self.parent = parent
         self.pos = pos
         self.sprite = ExplosionSprite(self.pos, 'explosion4.png', parent=self)
+        self.timer = TIMER_EXPLOSION
+
+    def delete(self):
+        if self.timer == 0:
+            self.parent.parent.parent.explosions.remove(self)
+            self.sprite.kill()

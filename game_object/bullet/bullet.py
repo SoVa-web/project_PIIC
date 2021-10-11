@@ -1,3 +1,4 @@
+import itertools
 import pygame
 from typing import TYPE_CHECKING
 from game_object import Vec2
@@ -42,6 +43,12 @@ class Bullet:
         self.sprite.update_field_pos(next_pos)
         if self.parent.parent.can_explosion_this(self.pos) :
             self.explosion_show()
+            for i in self.parent.parent.barriers:
+                if i.pos.x == self.pos.x and i.pos.y == self.pos.y:
+                    i.sprite.kill()
+                    self.parent.parent.barriers.remove(i)
+            self.sprite.kill()
+            self.parent.parent.bullets.remove(self)
         self.pos = next_pos         
 
     def explosion_show(self):
@@ -49,6 +56,7 @@ class Bullet:
         exp.sprite.update_field_pos(self.pos)
         self.parent.parent.explosions.append(exp)
         self.parent.parent.add_explosion(exp)
+
 
 
 
