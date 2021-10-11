@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from game_object import Vec2
 from game_object.game_obj import GameObjectSprite
 from config import WIDTH, HEIGHT
+from game_object.explosion.explosion import Explosion
 
 
 if TYPE_CHECKING:
@@ -39,6 +40,15 @@ class Bullet:
     def bullet_move(self):
         next_pos = self.pos + self.sprite.dir
         self.sprite.update_field_pos(next_pos)
-        self.pos = next_pos
+        if self.parent.parent.can_explosion_this(self.pos) :
+            self.explosion_show()
+        self.pos = next_pos         
+
+    def explosion_show(self):
+        exp = Explosion(self, self.pos)
+        exp.sprite.update_field_pos(self.pos)
+        self.parent.parent.explosions.append(exp)
+        self.parent.parent.add_explosion(exp)
+
 
 

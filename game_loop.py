@@ -31,13 +31,11 @@ class GameLoop:
             if event.type == pygame.KEYDOWN:
                 for player in self.field.players: #перевірити правильність, щоб не всі одночасно рухались 
                     player.key_processor.process_key_down_event(event)
-                    #маємо передавати в балет теж
 
             #--if we stopped pressing a key--
             if event.type == pygame.KEYUP:
                 for player in self.field.players:
                     player.key_processor.process_key_up_event(event)
-                     #маємо передавати в балет теж
 
     def start(self):
         self.is_running = True

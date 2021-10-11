@@ -22,6 +22,7 @@ class Field:
         self.barriers = []
         self.num_block = 150
         self.bullets = []
+        self.explosions = []
 
         #--generating barriers positions--
         while self.num_block!=0:
@@ -44,6 +45,9 @@ class Field:
     def add_bullet_in_field(self, bullet):
         self.sprites.add(bullet.sprite)
 
+    def add_explosion(self, explosion):
+        self.sprites.add(explosion.sprite)
+
     #--"Can the player move to this cell?"--
     def can_move_to_pos(self, pos: Vec2):
         #--if the cell is outside the field, you cannot move there--
@@ -54,6 +58,13 @@ class Field:
             if game_obj.pos == pos:
                 return False
         return True
+
+    #--"Can the bullet explosion this cell?"--
+    def can_explosion_this(self, pos: Vec2):
+        for game_obj in itertools.chain(self.players, self.barriers):
+            if game_obj.pos == pos:
+                return True
+        return False
 
     def draw_grid(self, screen):
         width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
@@ -82,5 +93,5 @@ class Field:
     def draw(self, screen):
         screen.fill((130, 178, 137))
         self.draw_grid(screen)
-        for game_obj in itertools.chain(self.players, self.barriers, self.bullets):
+        for game_obj in itertools.chain(self.players, self.barriers, self.bullets, self.explosions):
             game_obj.sprite.set_field_size_info(self.cell_size, self.w_padding, self.h_padding)
