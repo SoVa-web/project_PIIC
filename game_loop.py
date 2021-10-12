@@ -43,8 +43,6 @@ class GameLoop:
        
         while self.is_running:
             frame += 1
-            for i in self.field.explosions:
-                i.timer -= 1
             self.clock.tick(FPS)
             self.process_events()
             self.field.draw(screen)
@@ -52,8 +50,8 @@ class GameLoop:
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
                     player.move()
-                for opponeny in self.field.opponents:
-                    opponeny.random_move()
+                for opponent in self.field.opponents:
+                    opponent.random_move()
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
                 for explosion in self.field.explosions:

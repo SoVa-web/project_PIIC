@@ -22,6 +22,7 @@ class Explosion:
         self.timer = TIMER_EXPLOSION
 
     def delete(self):
+        self.timer -= 1
         if self.timer == 0:
-            self.parent.parent.parent.explosions.remove(self)
+            self.parent.parent.explosions.remove(self)
             self.sprite.kill()

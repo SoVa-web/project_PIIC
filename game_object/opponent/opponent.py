@@ -3,13 +3,13 @@ import pygame
 from typing import TYPE_CHECKING
 from game_object import Vec2
 from game_object.game_obj import GameObjectSprite
-from config import WIDTH, HEIGHT
-from game_object.explosion.explosion import Explosion
+from config import WIDTH, HEIGHT, TIMER_EVENT_OPPONENT
 from game_object.bullet.bullet import Bullet
 
 
 if TYPE_CHECKING:
     from game_object.field import Field
+    
 
 class OpponentSprite(GameObjectSprite):
     def __init__(self, pos: Vec2, sprite_filename: str, parent: 'Opponent'):
@@ -35,9 +35,9 @@ class OpponentSprite(GameObjectSprite):
                 return 
         view_direction_angle = {
             Vec2(x=0, y=-1): 0,
-            Vec2(x=+1, y=0): 90,
+            Vec2(x=+1, y=0): 270,
             Vec2(x=0, y=+1): 180,
-            Vec2(x=-1, y=0): 270,
+            Vec2(x=-1, y=0): 90,
         }[vec]
         self.scaled_image = pygame.transform.rotate(self.orig_image, view_direction_angle)
 
@@ -53,22 +53,26 @@ class Opponent:
         self.last_direction = Vec2(0, 1)
         self.dir_possible = [Vec2(x = +1, y = 0), Vec2(x = -1, y =0), Vec2(x = 0, y = +1), Vec2(x = 0, y = -1)]
         self.rand_dir = self.dir_possible[random.randint(0, 3)]
+        self.timer = TIMER_EVENT_OPPONENT
 
     def random_move(self):
-        rand_dir = self.dir_possible[random.randint(0, 3)]
-        self.rand_dir = rand_dir
-        next_pos = self.pos + self.rand_dir
-        if not self.rand_dir == Vec2(0, 0):
-            self.last_direction = self.rand_dir
-        if self.parent.can_move_to_pos(next_pos) :
-            self.pos = next_pos
-        # else сменить направление#
-        self.sprite.update_field_pos(self.pos)
+        self.timer -= 1
+        if self.timer == 0:
+            rand_dir = self.dir_possible[random.randint(0, 3)]
+            self.rand_dir = rand_dir
+            next_pos = self.pos + self.rand_dir
+            if not self.rand_dir == Vec2(0, 0):
+                self.last_direction = self.rand_dir
+            if self.parent.can_move_to_pos(next_pos) :
+                self.pos = next_pos
+                self.random_shot()
+            # else сменить направление#
+            self.sprite.update_field_pos(self.pos) 
+            self.timer = TIMER_EVENT_OPPONENT
 
-
-    """def random_shot(self):
-        bullet = Bullet(self, self.pos+self.last_direction, self.last_direction)
+    def random_shot(self):
+        bullet = Bullet(self.parent, self.pos+self.last_direction, self.last_direction)
         bullet.sprite.update_field_pos(self.pos+self.last_direction)
         self.parent.bullets.append(bullet)
-        self.parent.add_bullet_in_field(bullet)"""
+        self.parent.add_bullet_in_field(bullet)
         

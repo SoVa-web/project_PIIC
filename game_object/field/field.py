@@ -19,8 +19,8 @@ class Field:
         self.sprites = pygame.sprite.Group()
         self.w_size = w_size
         self.h_size = h_size
-        self.players: List[Player] = []
-        self.opponents: List[Opponent] = []
+        self.players = []
+        self.opponents = []
         self.barriers = []
         self.num_block = 150
         self.num_opponents = 2
@@ -82,7 +82,7 @@ class Field:
 
     #--"Can the bullet explosion this cell?"--
     def can_explosion_this(self, pos: Vec2):
-        for game_obj in itertools.chain(self.opponents, self.barriers):
+        for game_obj in itertools.chain(self.opponents, self.barriers, self.players):
             if game_obj.pos == pos:
                 return True
         return False
