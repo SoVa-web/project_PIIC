@@ -1,9 +1,7 @@
-import itertools
 import pygame
 from typing import TYPE_CHECKING
 from game_object import Vec2
 from game_object.game_obj import GameObjectSprite
-from config import WIDTH, HEIGHT
 from game_object.explosion.explosion import Explosion
 
 
@@ -47,6 +45,10 @@ class Bullet:
                 if i.pos.x == self.pos.x and i.pos.y == self.pos.y:
                     i.sprite.kill()
                     self.parent.parent.barriers.remove(i)
+            for i in self.parent.parent.opponents:
+                if i.pos.x == self.pos.x and i.pos.y == self.pos.y:
+                    i.sprite.kill()
+                    self.parent.parent.opponents.remove(i)
             self.sprite.kill()
             self.parent.parent.bullets.remove(self)
         self.pos = next_pos         

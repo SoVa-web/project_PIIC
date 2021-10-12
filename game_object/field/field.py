@@ -7,6 +7,7 @@ import pygame
 
 from game_object import Vec2
 from game_object.barrier.wall import Wall
+from game_object.opponent.opponent import Opponent
 from game_object.player import Player
 from config import FIELD_W_SIZE, FIELD_H_SIZE
 
@@ -18,20 +19,40 @@ class Field:
         self.sprites = pygame.sprite.Group()
         self.w_size = w_size
         self.h_size = h_size
-        self.players: List[Player] = [Player(self)]
+        self.players: List[Player] = []
+        self.opponents: List[Opponent] = []
         self.barriers = []
         self.num_block = 150
+        self.num_opponents = 2
         self.bullets = []
         self.explosions = []
 
+
+        #--add player--
+        self.players.append(Player(self, Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))))
+        
+        #--add opponents--
+        while self.num_opponents!=0:
+            vec = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
+            if self.can_move_to_pos(vec):
+                self.num_opponents-=1
+                self.opponents.append(Opponent(self, vec))
+             
         #--generating barriers positions--
         while self.num_block!=0:
-             self.num_block-=1
-             self.barriers.append(Wall(Vec2(random.randint(1, FIELD_W_SIZE), random.randint(1, FIELD_H_SIZE))))
+             vec = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
+             if self.can_move_to_pos(vec):
+                self.num_block-=1
+                self.barriers.append(Wall(vec))
+             
 
         #--adding players to sprites on the field--
         for player in self.players:
             self.sprites.add(player.sprite)
+
+        #--adding opponents to sprites on the field--
+        for opponent in self.opponents:
+            self.sprites.add(opponent.sprite)
 
         #--adding barriers to sprites on the field--
         for barrier in self.barriers:
@@ -54,14 +75,14 @@ class Field:
         if not (0 <= pos.x < self.w_size and 0 <= pos.y < self.h_size):
             return False
         #--if there is an obstacle or a player in the cell, then you cannot move there--
-        for game_obj in itertools.chain(self.players, self.barriers):
+        for game_obj in itertools.chain(self.players, self.opponents,  self.barriers):
             if game_obj.pos == pos:
                 return False
         return True
 
     #--"Can the bullet explosion this cell?"--
     def can_explosion_this(self, pos: Vec2):
-        for game_obj in itertools.chain(self.players, self.barriers):
+        for game_obj in itertools.chain(self.opponents, self.barriers):
             if game_obj.pos == pos:
                 return True
         return False
@@ -93,5 +114,5 @@ class Field:
     def draw(self, screen):
         screen.fill((130, 178, 137))
         self.draw_grid(screen)
-        for game_obj in itertools.chain(self.players, self.barriers, self.bullets, self.explosions):
+        for game_obj in itertools.chain(self.players, self.barriers, self.bullets, self.explosions, self.opponents):
             game_obj.sprite.set_field_size_info(self.cell_size, self.w_padding, self.h_padding)

@@ -79,7 +79,7 @@ class Player:
     def __init__(self, parent: 'Field', pos: Vec2 = Vec2()):
         self.parent = parent
         self.pos = pos
-        self.sprite = PlayerSprite(Vec2(1, 1), 'player.png', parent=self)
+        self.sprite = PlayerSprite(pos, 'player.png', parent=self)
         self.key_processor = PlayerKeyProcessor(parent=self)
         self.last_direction = Vec2(0, 1)
         
@@ -94,6 +94,7 @@ class Player:
             self.last_direction = self.key_processor.get_vector()
         if self.parent.can_move_to_pos(next_pos) :
             self.pos = next_pos
+        # else сменить направление#
         self.sprite.update_field_pos(self.pos)
 
 

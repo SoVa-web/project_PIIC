@@ -52,6 +52,8 @@ class GameLoop:
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
                     player.move()
+                for opponeny in self.field.opponents:
+                    opponeny.random_move()
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
                 for explosion in self.field.explosions:
