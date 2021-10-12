@@ -29,30 +29,33 @@ class BulletSprite(GameObjectSprite):
     
 
 class Bullet:
-    def __init__(self, parent = 'Field', pos: Vec2 = Vec2(), dir:Vec2 = Vec2()):
+    def __init__(self, parent = 'Field', pos: Vec2 = Vec2(), dir:Vec2 = Vec2(), source: str = str()):
         self.parent = parent
         self.pos = pos
         self.dir = dir
         self.sprite = BulletSprite(self.pos, self.dir, 'shotOrange.png', parent=self)
+        self.source = source
         
 
     def bullet_move(self):
         next_pos = self.pos + self.sprite.dir
         self.sprite.update_field_pos(next_pos)
         if self.parent.can_explosion_this(self.pos) :
-            self.explosion_show()
             for i in self.parent.barriers:
                 if i.pos.x == self.pos.x and i.pos.y == self.pos.y:
                     i.sprite.kill()
                     self.parent.barriers.remove(i)
+                    self.explosion_show()
             for i in self.parent.opponents:
-                if i.pos.x == self.pos.x and i.pos.y == self.pos.y:
+                if i.pos.x == self.pos.x and i.pos.y == self.pos.y and not self.source == "Opponent":
                     i.sprite.kill()
                     self.parent.opponents.remove(i)
+                    self.explosion_show()
             for i in self.parent.players:
-                if i.pos.x == self.pos.x and i.pos.y == self.pos.y:
+                if i.pos.x == self.pos.x and i.pos.y == self.pos.y  and not self.source == "Player":
                     i.sprite.kill()
                     self.parent.players.remove(i)
+                    self.explosion_show()
             self.sprite.kill()
             self.parent.bullets.remove(self)
         self.pos = next_pos         

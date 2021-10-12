@@ -71,7 +71,7 @@ class Opponent:
             self.timer = TIMER_EVENT_OPPONENT
 
     def random_shot(self):
-        bullet = Bullet(self.parent, self.pos+self.last_direction, self.last_direction)
+        bullet = Bullet(self.parent, self.pos+self.last_direction, self.last_direction, "Opponent")
         bullet.sprite.update_field_pos(self.pos+self.last_direction)
         self.parent.bullets.append(bullet)
         self.parent.add_bullet_in_field(bullet)

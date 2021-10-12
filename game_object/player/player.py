@@ -99,7 +99,7 @@ class Player:
 
 
     def shot(self):
-        bullet = Bullet(self.parent, self.pos+self.last_direction, self.last_direction)
+        bullet = Bullet(self.parent, self.pos+self.last_direction, self.last_direction, "Player")
         bullet.sprite.update_field_pos(self.pos+self.last_direction)
         self.parent.bullets.append(bullet)
         self.parent.add_bullet_in_field(bullet)
