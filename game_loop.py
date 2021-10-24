@@ -1,5 +1,5 @@
 from typing import Any
-import pygame as pygame
+import pygame 
 
 import config
 from config import WIDTH, HEIGHT, FPS

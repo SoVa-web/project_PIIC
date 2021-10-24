@@ -22,7 +22,7 @@ class Field:
         self.players = []
         self.opponents = []
         self.barriers = []
-        self.num_block = 150
+        self.num_chain_block = 40
         self.num_opponents = 2
         self.bullets = []
         self.explosions = []
@@ -39,11 +39,21 @@ class Field:
                 self.opponents.append(Opponent(self, vec))
              
         #--generating barriers positions--
-        while self.num_block!=0:
+        while self.num_chain_block != 0:
              vec = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
+             length_bar = random.randint(0, FIELD_W_SIZE-1)
+             set_dir = [Vec2(+1, 0), Vec2(0, -1)]
+             dir = random.randint(0, 1)
              if self.can_move_to_pos(vec):
-                self.num_block-=1
+                self.num_chain_block -= 1
                 self.barriers.append(Wall(vec))
+             while length_bar > 0:
+                vec = vec + set_dir[dir]
+                length_bar -= 1
+                if self.can_move_to_pos(vec):
+                    self.barriers.append(Wall(vec))
+
+                
              
 
         #--adding players to sprites on the field--
