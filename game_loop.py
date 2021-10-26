@@ -5,6 +5,7 @@ import config
 from config import WIDTH, HEIGHT, FPS
 from game_object.field import Field
 from result_game import Result
+from game_object.graph.graph import Graph
 
 pygame.init()
 
@@ -22,6 +23,7 @@ class GameLoop:
         self.is_running = False
         self.end = False
         self.field = Field(config.FIELD_W_SIZE, config.FIELD_H_SIZE)
+        self.graph = Graph(self.field)
 
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
@@ -29,6 +31,7 @@ class GameLoop:
             #--if we click "Close Window"--
             if event.type == pygame.QUIT:
                 self.is_running = False
+                self.end = False
 
             #--if we pressed a key--
             if event.type == pygame.KEYDOWN:
@@ -47,9 +50,10 @@ class GameLoop:
 
     def start(self):
         self.is_running = True
+        self.end = True
         frame = 0
        
-        while self.is_running:
+        while self.is_running and self.end:
             frame += 1
             self.clock.tick(FPS)
             self.process_events()
@@ -78,7 +82,7 @@ class GameLoop:
         if len(self.field.opponents) == 0:
             winner = "Player"
         result = Result(screen_end, winner)
-        while not self.is_running:
+        while self.end and not self.is_running:
             frame += 1
             self.clock.tick(FPS)
             self.process_events()

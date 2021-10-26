@@ -105,6 +105,18 @@ class Field:
                 return True
         return False
 
+    #--"Can we draw an edge of the graph?"--
+    def can_draw_edge_graph(self, pos: Vec2):
+        if not (0 <= pos.x < self.w_size and 0 <= pos.y < self.h_size):
+            return False
+        for game_obj in itertools.chain(self.barriers):
+            if game_obj.pos == pos:
+                return False
+        return True
+
+
+    
+
     def draw_grid(self, screen):
         width, height = pygame.display.Info().current_w, pygame.display.Info().current_h
         if width < height:
