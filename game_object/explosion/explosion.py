@@ -2,7 +2,7 @@ import pygame
 from typing import TYPE_CHECKING
 from game_object import Vec2
 from game_object.game_obj import GameObjectSprite
-from config import TIMER_EXPLOSION
+from config import TIMER_EXPLOSION, FIELD_H_SIZE, FIELD_W_SIZE
 
 
 if TYPE_CHECKING:
@@ -21,10 +21,15 @@ class Explosion:
         self.sprite = ExplosionSprite(self.pos, 'explosion4.png', parent=self)
         self.timer = TIMER_EXPLOSION
 
-    def delete(self, update_matrix, draw_path):
+    def delete(self, graph, draw_path):
         self.timer -= 1
         if self.timer == 0:
             self.parent.parent.explosions.remove(self)
             self.sprite.kill()
-            #update_matrix()
-            #draw_path()
+            dir = [Vec2(+1, 0), Vec2(-1, 0), Vec2(0, +1), Vec2(0, -1)]
+            for i in dir:
+                    if graph.parent.can_draw_edge_graph(self.sprite.pos + i):
+                            index_adj = graph.set_nodes.index((self.sprite.pos + i))
+                            if graph.parent.can_draw_edge_graph((self.sprite.pos)) and graph.set_nodes.index(self.sprite.pos) != index_adj:
+                                graph.matrix_adjacency[graph.set_nodes.index(self.sprite.pos)][index_adj] = graph.matrix_adjacency[index_adj][graph.set_nodes.index(self.sprite.pos)] = 1
+            draw_path()

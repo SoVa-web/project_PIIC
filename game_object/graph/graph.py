@@ -93,7 +93,9 @@ class Graph:
             path = self.findPath()
             if len(path) > 2:
                 path.pop(len(path)-1)
-                path.pop(0)     
+                path.pop(0) 
+            else:
+                path = []    
         return path
 
     def dfs_algorithm(self, vertex):

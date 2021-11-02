@@ -7,6 +7,7 @@ from game_object.field import Field
 from game_object.vec2 import Vec2
 from result_game import Result
 from game_object.graph.graph import Graph
+import time
 
 pygame.init()
 
@@ -26,7 +27,6 @@ class GameLoop:
         self.field = Field(config.FIELD_W_SIZE, config.FIELD_H_SIZE)
         self.graph = Graph(self.field)
         self.list_path = []
-        self.cycle_update_graph = 600
 
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
@@ -61,10 +61,6 @@ class GameLoop:
             self.clock.tick(FPS)
             self.process_events()
             self.field.draw(screen)
-            self.cycle_update_graph-=1
-            if self.cycle_update_graph == 0:
-                 self.cycle_update_graph = 600
-                 self.update_matrix()
             
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
@@ -74,7 +70,7 @@ class GameLoop:
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
                 for explosion in self.field.explosions:
-                    explosion.delete(self.update_matrix, self.draw_path)
+                    explosion.delete(self.graph, self.draw_path)
                 frame = 0
             if len(self.field.players) == 0 or len(self.field.opponents) == 0:
                 self.is_running = False
@@ -100,13 +96,14 @@ class GameLoop:
             pygame.display.flip()
 
     def draw_path(self):
+        sp = time.time()
+
         self.list_path = []
         for player  in self.field.players:
             for opponent in self.field.opponents:
                 path = self.graph.dfs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
                 self.list_path.append(path)
 
-    def update_matrix(self):
-        self.graph.init_matrix()
-        self.graph.transform_field_to_matrix()
+        print(time.time()-sp)
+        
 
