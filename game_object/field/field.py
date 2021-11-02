@@ -9,7 +9,7 @@ from game_object import Vec2
 from game_object.barrier.wall import Wall
 from game_object.opponent.opponent import Opponent
 from game_object.player import Player
-from config import FIELD_W_SIZE, FIELD_H_SIZE
+from config import FIELD_W_SIZE, FIELD_H_SIZE, WIDTH, HEIGHT
 
 line_color = (0, 255, 127)
 
@@ -26,6 +26,9 @@ class Field:
         self.num_opponents = 2
         self.bullets = []
         self.explosions = []
+        self.surface1 = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
+        self.surface1.fill((255, 203, 219))
+        self.surface1.set_alpha(150)
 
 
         #--add player--
@@ -146,3 +149,5 @@ class Field:
         self.draw_grid(screen)
         for game_obj in itertools.chain(self.players, self.barriers, self.bullets, self.explosions, self.opponents):
             game_obj.sprite.set_field_size_info(self.cell_size, self.w_padding, self.h_padding)
+
+

@@ -21,8 +21,10 @@ class Explosion:
         self.sprite = ExplosionSprite(self.pos, 'explosion4.png', parent=self)
         self.timer = TIMER_EXPLOSION
 
-    def delete(self):
+    def delete(self, update_matrix, draw_path):
         self.timer -= 1
         if self.timer == 0:
             self.parent.parent.explosions.remove(self)
             self.sprite.kill()
+            #update_matrix()
+            #draw_path()

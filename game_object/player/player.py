@@ -84,7 +84,7 @@ class Player:
         self.last_direction = Vec2(0, 1)
         
 
-    def move(self):
+    def move(self, draw_path):
         #--we forbid moving diagonally--
         for vec in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1)]):
             if vec == self.key_processor.get_vector():
@@ -94,6 +94,7 @@ class Player:
             self.last_direction = self.key_processor.get_vector()
         if self.parent.can_move_to_pos(next_pos) :
             self.pos = next_pos
+            draw_path()
         # else сменить направление#
         self.sprite.update_field_pos(self.pos)
 

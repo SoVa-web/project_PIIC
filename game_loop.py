@@ -2,8 +2,9 @@ from typing import Any
 import pygame 
 
 import config
-from config import WIDTH, HEIGHT, FPS
+from config import WIDTH, HEIGHT, FPS, FIELD_W_SIZE, FIELD_H_SIZE
 from game_object.field import Field
+from game_object.vec2 import Vec2
 from result_game import Result
 from game_object.graph.graph import Graph
 
@@ -24,6 +25,8 @@ class GameLoop:
         self.end = False
         self.field = Field(config.FIELD_W_SIZE, config.FIELD_H_SIZE)
         self.graph = Graph(self.field)
+        self.list_path = []
+        self.cycle_update_graph = 600
 
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
@@ -58,21 +61,28 @@ class GameLoop:
             self.clock.tick(FPS)
             self.process_events()
             self.field.draw(screen)
+            self.cycle_update_graph-=1
+            if self.cycle_update_graph == 0:
+                 self.cycle_update_graph = 600
+                 self.update_matrix()
             
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
-                    player.move()
+                    player.move( self.draw_path)
                 for opponent in self.field.opponents:
-                    opponent.random_move()
+                    opponent.random_move( self.draw_path)
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
                 for explosion in self.field.explosions:
-                    explosion.delete()
+                    explosion.delete(self.update_matrix, self.draw_path)
                 frame = 0
             if len(self.field.players) == 0 or len(self.field.opponents) == 0:
                 self.is_running = False
             self.field.sprites.update()
             self.field.sprites.draw(screen)
+            for path in self.list_path:
+                for ver in path:
+                    screen.blit(self.field.surface1, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
             pygame.display.flip()
 
         screen_end = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -88,4 +98,15 @@ class GameLoop:
             self.process_events()
             result.draw()
             pygame.display.flip()
+
+    def draw_path(self):
+        self.list_path = []
+        for player  in self.field.players:
+            for opponent in self.field.opponents:
+                path = self.graph.dfs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
+                self.list_path.append(path)
+
+    def update_matrix(self):
+        self.graph.init_matrix()
+        self.graph.transform_field_to_matrix()
 
