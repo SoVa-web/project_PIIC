@@ -20,10 +20,10 @@ class Graph:
         self.num_columns = FIELD_H_SIZE*FIELD_W_SIZE
         self.parent = parent
         self.init_set()
-        sp = time.time()
         self.init_matrix()
         self.transform_field_to_matrix()
-        print(time.time()-sp)
+        self.init_list()
+        self.transform_field_to_list()
 
         
     def init_matrix(self):
@@ -77,7 +77,6 @@ class Graph:
                     index_adj = self.set_nodes.index((self.set_nodes[iter] + i))
                     if  self.parent.can_draw_edge_graph((self.set_nodes[iter])):
                         self.list_adjacency[iter].append(index_adj)
-        print(self.list_adjacency)
                        
 
     def dfs(self, start, target):
@@ -90,7 +89,7 @@ class Graph:
         self.shortLength = sys.maxsize
         path = []
         if not  self.findPath() == None:
-            path = self.findPath()
+            path = self.findPath_dfs()
             if len(path) > 2:
                 path.pop(len(path)-1)
                 path.pop(0) 
@@ -113,12 +112,12 @@ class Graph:
                 self.dfs_algorithm(nbr)
         self.length -=1
 
-    def findPath(self):
+    def findPath_dfs(self):
         self.dfs_algorithm(self.start)
-        path = self.trace_route()
+        path = self.trace_route_dfs()
         return path
 
-    def trace_route(self):
+    def trace_route_dfs(self):
         vertex = self.end
         route = [] 
         while vertex != -1:
@@ -128,10 +127,41 @@ class Graph:
         return route
 
 
+    def bfs(self, start, target):
+        path = self.bfs_algorithm(start, target)
+        if path == None:
+            path = []
+        if len(path) > 2:
+            path.pop(len(path)-1)
+            path.pop(0) 
+        else:
+            path = []  
+        for i in range(len(path)):
+            path[i] = self.set_nodes[path[i]]
+        print(path)
+        return path
 
-    def bfs(self):
-        pass
 
+    def bfs_algorithm(self, start, target):
+        visited = []
+        queue = [[start]]
+        while queue:
+            path = queue.pop(0)
+            node = path[-1]
+            if node not in visited:
+                neighbours = self.list_adjacency[node]
+                for neighbour in neighbours:
+                    new_path = list(path)
+                    new_path.append(neighbour)
+                    queue.append(new_path)
+                    if neighbour == target:
+                        print(new_path)
+                        return new_path
+                visited.append(node)
+        return []
+
+                    
+    
 
     def ucs(self):
         self.init_matrix()

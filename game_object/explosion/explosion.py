@@ -32,4 +32,6 @@ class Explosion:
                             index_adj = graph.set_nodes.index((self.sprite.pos + i))
                             if graph.parent.can_draw_edge_graph((self.sprite.pos)) and graph.set_nodes.index(self.sprite.pos) != index_adj:
                                 graph.matrix_adjacency[graph.set_nodes.index(self.sprite.pos)][index_adj] = graph.matrix_adjacency[index_adj][graph.set_nodes.index(self.sprite.pos)] = 1
+                                graph.list_adjacency[graph.set_nodes.index(self.sprite.pos)].append(index_adj)
+                                graph.list_adjacency[index_adj].append(graph.set_nodes.index(self.sprite.pos))
             draw_path()
