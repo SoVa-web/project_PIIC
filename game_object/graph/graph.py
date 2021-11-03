@@ -2,6 +2,7 @@ from typing import List
 from typing import TYPE_CHECKING
 import time
 import sys
+from heapq import heappush, heappop
 import numpy
 
 import pygame
@@ -51,6 +52,7 @@ class Graph:
             while self.num_columns > 0:
                 self.num_columns -= 1
                 self.set_nodes.append(Vec2(self.num_columns, self.num_rows))
+        self.set_nodes.reverse()
 
     
     #--We connect graph vertices with an edge only if they are adjacent and there is no barrier in both of them--
@@ -80,16 +82,16 @@ class Graph:
                        
 
     def dfs(self, start, target):
-        self.N = len(self.set_nodes)
-        self.visited = [0 for x in range(self.N)]
-        self.prev = [-1 for x in range(self.N)]
+        self.visited = [0 for x in range(FIELD_H_SIZE*FIELD_W_SIZE)]
+        self.prev = [-1 for x in range(FIELD_H_SIZE*FIELD_W_SIZE)]
         self.length = 0
         self.start = start
         self.end = target
         self.shortLength = sys.maxsize
         path = []
-        if not  self.findPath() == None:
-            path = self.findPath_dfs()
+        self.dfs_algorithm(self.start)
+        path = self.prev_dfs()
+        if not  path == None:
             if len(path) > 2:
                 path.pop(len(path)-1)
                 path.pop(0) 
@@ -98,26 +100,14 @@ class Graph:
         return path
 
     def dfs_algorithm(self, vertex):
-        self.length +=1
-        if self.length > self.shortLength:
-            return
-        if vertex == self.end:
-            self.shortLength = self.length
-            return
         self.visited[vertex] = 1
-        for i in range(self.N):
+        for i in range(FIELD_H_SIZE*FIELD_W_SIZE):
             if self.matrix_adjacency[vertex][i] == 1 and self.visited[i] == 0:
                 nbr = i
                 self.prev[nbr] = vertex
                 self.dfs_algorithm(nbr)
-        self.length -=1
 
-    def findPath_dfs(self):
-        self.dfs_algorithm(self.start)
-        path = self.trace_route_dfs()
-        return path
-
-    def trace_route_dfs(self):
+    def prev_dfs(self):
         vertex = self.end
         route = [] 
         while vertex != -1:
@@ -125,7 +115,6 @@ class Graph:
             vertex = self.prev[vertex]
         route.reverse()
         return route
-
 
     def bfs(self, start, target):
         path = self.bfs_algorithm(start, target)
@@ -138,7 +127,7 @@ class Graph:
             path = []  
         for i in range(len(path)):
             path[i] = self.set_nodes[path[i]]
-        print(path)
+        #print(path)
         return path
 
 
@@ -155,23 +144,26 @@ class Graph:
                     new_path.append(neighbour)
                     queue.append(new_path)
                     if neighbour == target:
-                        print(new_path)
+                        #print(new_path)
                         return new_path
                 visited.append(node)
         return []
 
                     
-    
+    def ucs(self, start, target):
+        path = self.ucs_algorithm(start, target)
+        if path == None:
+            path = []
+        if len(path) > 2:
+            path.pop(len(path)-1)
+            path.pop(0) 
+        else:
+            path = []  
+        for i in range(len(path)):
+            path[i] = self.set_nodes[path[i]]
+        return path
 
-    def ucs(self):
-        self.init_matrix()
-        sp = time.time()
-        self.transform_field_to_matrix()
-        print(time.time()-sp)
-
-    
-
-
-
+    def ucs_algorithm(self, start, target):
+        pass
 
     

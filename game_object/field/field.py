@@ -23,7 +23,7 @@ class Field:
         self.opponents = []
         self.barriers = []
         self.num_chain_block = 16
-        self.num_opponents = 2
+        self.num_opponents = 1
         self.bullets = []
         self.explosions = []
         self.surface1 = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))

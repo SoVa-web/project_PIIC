@@ -27,8 +27,9 @@ class GameLoop:
         self.field = Field(config.FIELD_W_SIZE, config.FIELD_H_SIZE)
         self.graph = Graph(self.field)
         self.list_path = []
-        self.draw_path = self.draw_path_bfs
-        self.num_algoriyhm = 3
+        self.draw_path = self.draw_path_dfs
+        print("Using DFS")
+        self.num_algoriyhm = 2
 
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
@@ -47,14 +48,14 @@ class GameLoop:
                     if self.num_algoriyhm == 1:
                         self.num_algoriyhm = 3
                         self.draw_path = self.draw_path_bfs
-                        print(1)
+                        print("Using BFS")
                     if self.num_algoriyhm == 2:
-                        self.draw_path = self.draw_path_bfs
-                        print(2)
-                    if self.num_algoriyhm == 3:
-                        self.draw_path = self.draw_path_bfs
+                        self.draw_path = self.draw_path_dfs
+                        print("Using DFS")
+                    """ if self.num_algoriyhm == 3:
+                        self.draw_path = self.draw_path_ucs
                         print(3)
-
+                    """
 
                     
 
@@ -113,7 +114,7 @@ class GameLoop:
             pygame.display.flip()
 
     def draw_path_dfs(self):
-        sp = time.time()
+        #sp = time.time()
 
         self.list_path = []
         for player  in self.field.players:
@@ -121,10 +122,10 @@ class GameLoop:
                 path = self.graph.dfs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
                 self.list_path.append(path)
 
-        print(time.time()-sp)
+        #print(time.time()-sp)
         
     def draw_path_bfs(self):
-        sp = time.time()
+        #sp = time.time()
 
         self.list_path = []
         for player  in self.field.players:
@@ -132,5 +133,16 @@ class GameLoop:
                 path = self.graph.bfs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
                 self.list_path.append(path)
 
-        print(time.time()-sp)
+        #print(time.time()-sp)
+
+    def draw_path_ucs(self):
+        #sp = time.time()
+
+        self.list_path = []
+        for player  in self.field.players:
+            for opponent in self.field.opponents:
+                path = self.graph.ucs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
+                self.list_path.append(path)
+
+        #print(time.time()-sp)
 
