@@ -159,7 +159,7 @@ class GameLoop:
     def strategyPlayer(self, player):
         sp = time.time()
         self.list_path = []
-        path = self.astare.algorithm(self.graph.matrix_adjacency, self.graph.list_adjacency, self.graph.set_nodes.index(player.pos))
+        path = self.astare.algorithm(self.graph.matrix_adjacency, self.graph.set_nodes.index(player.pos))
         self.list_path.append(path)
         print("A* time : " + str(time.time()-sp))
                 
