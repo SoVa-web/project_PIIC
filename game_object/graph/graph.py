@@ -4,8 +4,11 @@ import time
 import sys
 from heapq import heappush, heappop
 import numpy
+import math
+import time
 
 import pygame
+from pygame.image import tostring
 
 from game_object.opponent.opponent import Opponent
 from config import FIELD_W_SIZE, FIELD_H_SIZE
@@ -137,6 +140,7 @@ class Graph:
         while queue:
             path = queue.pop(0)
             node = path[-1]
+            #print(node)
             if node not in visited:
                 neighbours = self.list_adjacency[node]
                 for neighbour in neighbours:
@@ -165,5 +169,18 @@ class Graph:
 
     def ucs_algorithm(self, start, target):
         pass
+
+    def shortestDistancesInStraightLine(self):
+        sp = time.time()
+        distances = []
+        for i in range(FIELD_W_SIZE*FIELD_H_SIZE):
+            distances.append(numpy.array([0 for x in range(FIELD_W_SIZE*FIELD_H_SIZE)]))
+        for x in range(FIELD_W_SIZE*FIELD_H_SIZE):
+            for y in range(FIELD_W_SIZE*FIELD_H_SIZE):
+                distances[x][y] = math.sqrt(math.pow((self.set_nodes[x].x - self.set_nodes[y].x), 2) + math.pow((self.set_nodes[x].y - self.set_nodes[y].y), 2))
+        print("Time hueristics : "+ str((time.time()-sp)) + "\n")
+        return distances
+
+        
 
     

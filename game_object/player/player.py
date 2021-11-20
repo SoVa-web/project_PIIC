@@ -2,11 +2,12 @@ from typing import TYPE_CHECKING
 
 import pygame
 
-
+import random
 from config import WIDTH, HEIGHT
 from game_object.game_obj import GameObjectSprite
 from game_object.vec2 import Vec2
 from game_object.bullet.bullet import Bullet
+from config import FIELD_H_SIZE, FIELD_W_SIZE
 
 if TYPE_CHECKING:
     from game_object.field import Field
@@ -84,7 +85,7 @@ class Player:
         self.last_direction = Vec2(0, 1)
         
 
-    def move(self, draw_path):
+    def move(self, strategyPlayer): #draw_path in args
         #--we forbid moving diagonally--
         for vec in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1)]):
             if vec == self.key_processor.get_vector():
@@ -94,7 +95,8 @@ class Player:
             self.last_direction = self.key_processor.get_vector()
         if self.parent.can_move_to_pos(next_pos) :
             self.pos = next_pos
-            draw_path()
+            #draw_path()
+            strategyPlayer(self)
         # else сменить направление#
         self.sprite.update_field_pos(self.pos)
 

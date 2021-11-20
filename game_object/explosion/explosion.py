@@ -21,7 +21,7 @@ class Explosion:
         self.sprite = ExplosionSprite(self.pos, 'explosion4.png', parent=self)
         self.timer = TIMER_EXPLOSION
 
-    def delete(self, graph, draw_path):
+    def delete(self, graph, strategyPlayerMove):#, draw_path
         self.timer -= 1
         if self.timer == 0:
             self.parent.parent.explosions.remove(self)
@@ -34,4 +34,5 @@ class Explosion:
                                 graph.matrix_adjacency[graph.set_nodes.index(self.sprite.pos)][index_adj] = graph.matrix_adjacency[index_adj][graph.set_nodes.index(self.sprite.pos)] = 1
                                 graph.list_adjacency[graph.set_nodes.index(self.sprite.pos)].append(index_adj)
                                 graph.list_adjacency[index_adj].append(graph.set_nodes.index(self.sprite.pos))
-            draw_path()
+            #draw_path()
+            strategyPlayerMove(self.parent.parent.players[0])

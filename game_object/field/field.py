@@ -4,6 +4,7 @@ import random
 from typing import List
 
 import pygame
+import numpy
 
 from game_object import Vec2
 from game_object.barrier.wall import Wall
@@ -26,9 +27,9 @@ class Field:
         self.num_opponents = 1
         self.bullets = []
         self.explosions = []
-        self.surface1 = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
-        self.surface1.fill((255, 203, 219))
-        self.surface1.set_alpha(150)
+        self.surface = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
+        self.surface.fill((255, 203, 219))
+        self.surface.set_alpha(150)
 
 
         #--add player--
@@ -149,5 +150,6 @@ class Field:
         self.draw_grid(screen)
         for game_obj in itertools.chain(self.players, self.barriers, self.bullets, self.explosions, self.opponents):
             game_obj.sprite.set_field_size_info(self.cell_size, self.w_padding, self.h_padding)
+            
 
 
