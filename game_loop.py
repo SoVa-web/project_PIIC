@@ -1,5 +1,6 @@
 from typing import Any
 import pygame 
+import itertools
 
 import config
 from config import WIDTH, HEIGHT, FPS, FIELD_W_SIZE, FIELD_H_SIZE
@@ -28,15 +29,16 @@ class GameLoop:
         self.end = False
         self.field = Field(config.FIELD_W_SIZE, config.FIELD_H_SIZE)
         self.graph = Graph(self.field)
-        self.list_path = []
-        self.draw_path = self.draw_path_dfs
+        self.list_path_players = []
+        self.list_path_opponents = []
+        self.draw_path = self.draw_path_bfs
         self.strategyPlayerMove = self.strategyPlayer
         self.num_algoriyhm = 2
         self.hueristics = self.graph.shortestDistancesInStraightLine()
         self.astare = Astare(self.graph.set_nodes, self.hueristics, FIELD_H_SIZE*FIELD_W_SIZE)
         self.targetPlayer = None
         self.choosingTarget()
-        self.winner = ""
+        self.draw_path()
         
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
@@ -86,7 +88,9 @@ class GameLoop:
                     #player.move(self.strategyPlayerMove) #self.draw_path in first args
                     self.strategyPlayer(player)
                 for opponent in self.field.opponents:
-                    opponent.random_move()#self.draw_path in first args
+                    #opponent.random_move()#self.draw_path in first args
+                    opponent.random_shot()
+                self.draw_path()
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
                 for explosion in self.field.explosions:
@@ -96,19 +100,22 @@ class GameLoop:
                 self.is_running = False
             self.field.sprites.update()
             self.field.sprites.draw(screen)
-            for path in self.list_path:
+            for path in self.list_path_players:
                 for ver in path:
-                    screen.blit(self.field.surface, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
-            screen.blit(self.field.surface, ((self.targetPlayer.x*(WIDTH//FIELD_W_SIZE)), (self.targetPlayer.y*(HEIGHT//FIELD_H_SIZE))))
+                    screen.blit(self.field.surface_player, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
+            for path in self.list_path_opponents:
+                for ver in path:
+                    screen.blit(self.field.surface_opponent, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
+            screen.blit(self.field.surface_player, ((self.targetPlayer.x*(WIDTH//FIELD_W_SIZE)), (self.targetPlayer.y*(HEIGHT//FIELD_H_SIZE))))
             pygame.display.flip()
 
         screen_end = pygame.display.set_mode((WIDTH, HEIGHT))
         winner = ""
         if len(self.field.players) == 0:
-            self.winner = "Opponent"
+            winner = "Opponent"
         if len(self.field.opponents) == 0:
-            self.winner = "Player"
-        result = Result(screen_end, self.winner)
+            winner = "Player"
+        result = Result(screen_end, winner)
         while self.end and not self.is_running:
             frame += 1
             self.clock.tick(FPS)
@@ -124,17 +131,19 @@ class GameLoop:
                 #self.list_path.append(path)
         
     def draw_path_bfs(self):
-        self.list_path = []
-        for player  in self.field.players:
-            for opponent in self.field.opponents:
-                path = self.graph.bfs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
-                #self.list_path.append(path)
+        self.list_path_opponents = []
+        for opponent in self.field.opponents:
+            for player  in self.field.players:
+                path = self.graph.bfs(self.graph.set_nodes.index(opponent.pos), self.graph.set_nodes.index(player.pos))
+                self.list_path_opponents.append(path)
+                if len(path) > 0:
+                    opponent.random_move(path[0])
 
 
     def strategyPlayer(self, player):
-        self.list_path = []
+        self.list_path_players = []
         path = self.astare.algorithm(self.graph.matrix_adjacency, self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(self.targetPlayer) )
-        self.list_path.append(path)
+        self.list_path_players.append(path)
         if len(path) > 1:
             path.pop(0)
         if len(path) > 0:
@@ -145,7 +154,7 @@ class GameLoop:
 
     #checking if we can get to the target
     def consist(self):
-        self.list_path = []
+        self.list_path_players = []
         path = []
         for player  in self.field.players:
             path = self.astare.algorithm(self.graph.matrix_adjacency, self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(self.targetPlayer) )
@@ -159,7 +168,7 @@ class GameLoop:
                 self.choosingTarget()
                 
     
-        self.list_path.append(path)
+        self.list_path_players.append(path)
         return True 
 
     #use it to select a new target

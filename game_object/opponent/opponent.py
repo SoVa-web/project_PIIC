@@ -3,7 +3,7 @@ import pygame
 from typing import TYPE_CHECKING
 from game_object import Vec2
 from game_object.game_obj import GameObjectSprite
-from config import WIDTH, HEIGHT, TIMER_EVENT_OPPONENT
+from config import WIDTH, HEIGHT, TIMER_EVENT_OPPONENT, TIMER_BULLET_OPPONENT
 from game_object.bullet.bullet import Bullet
 
 
@@ -29,7 +29,7 @@ class OpponentSprite(GameObjectSprite):
             self.view_directions[angle] = pygame.transform.rotate(image, -angle)
 
     def get_view_direction_image(self):
-        vec = self.parent.rand_dir
+        vec = self.parent.last_direction
         for v in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1), Vec2(0, 0)]):
             if v == vec:
                 return 
@@ -54,26 +54,31 @@ class Opponent:
         self.dir_possible = [Vec2(x = +1, y = 0), Vec2(x = -1, y =0), Vec2(x = 0, y = +1), Vec2(x = 0, y = -1)]
         self.rand_dir = self.dir_possible[random.randint(0, 3)]
         self.timer = TIMER_EVENT_OPPONENT
+        self.timer_bul = TIMER_BULLET_OPPONENT
 
-    def random_move(self):#, draw_path
+    def random_move(self, next_pos):#, draw_path
         self.timer -= 1
         if self.timer == 0:
-            rand_dir = self.dir_possible[random.randint(0, 3)]
+            """rand_dir = self.dir_possible[random.randint(0, 3)]
             self.rand_dir = rand_dir
-            next_pos = self.pos + self.rand_dir
-            if not self.rand_dir == Vec2(0, 0):
-                self.last_direction = self.rand_dir
+            next_pos = self.pos + self.rand_dir"""
+            dir = Vec2((next_pos.x - self.pos.x), (next_pos.y - self.pos.y))
+            if not dir == Vec2(0, 0):
+                self.last_direction = dir
             if self.parent.can_move_to_pos(next_pos) :
                 self.pos = next_pos
+                self.sprite.update_field_pos(self.pos)
                 self.random_shot()
             # else сменить направление#
-            self.sprite.update_field_pos(self.pos) 
             self.timer = TIMER_EVENT_OPPONENT
             #draw_path()
 
     def random_shot(self):
-        bullet = Bullet(self.parent, self.pos+self.last_direction, self.last_direction, "Opponent")
-        bullet.sprite.update_field_pos(self.pos+self.last_direction)
-        self.parent.bullets.append(bullet)
-        self.parent.add_bullet_in_field(bullet)
+        self.timer_bul -= 1
+        if self.timer_bul == 0:
+            bullet = Bullet(self.parent, self.pos+self.last_direction, self.last_direction, "Opponent")
+            bullet.sprite.update_field_pos(self.pos+self.last_direction)
+            self.parent.bullets.append(bullet)
+            self.parent.add_bullet_in_field(bullet)
+            self.timer_bul = TIMER_BULLET_OPPONENT
         

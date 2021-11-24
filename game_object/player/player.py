@@ -112,13 +112,14 @@ class Player:
         self.timer -= 1
         if self.timer == 0:
             dirMove = Vec2((nextPos.x - self.pos.x), (nextPos.y - self.pos.y))
-            print(dirMove)
             if not dirMove == Vec2(0, 0):
                 self.last_direction = dirMove
-            
             if self.parent.can_move_to_pos(nextPos) :
                 self.pos = nextPos
                 self.sprite.update_field_pos(self.pos)
+            for op in self.parent.opponents:
+                if op.pos.x == self.pos.x or op.pos.y == self.pos.y:
+                    self.shot()
             self.timer = TIMER_EVENT_PLAYER
         
 

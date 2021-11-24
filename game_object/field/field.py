@@ -27,9 +27,12 @@ class Field:
         self.num_opponents = 1
         self.bullets = []
         self.explosions = []
-        self.surface = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
-        self.surface.fill((255, 203, 219))
-        self.surface.set_alpha(150)
+        self.surface_player = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
+        self.surface_player.fill((255, 203, 219))
+        self.surface_player.set_alpha(150)
+        self.surface_opponent = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
+        self.surface_opponent.fill((0, 0, 0))
+        self.surface_opponent.set_alpha(150)
 
 
         #--add player--
