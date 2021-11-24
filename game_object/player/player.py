@@ -3,11 +3,10 @@ from typing import TYPE_CHECKING
 import pygame
 
 import random
-from config import WIDTH, HEIGHT
+from config import WIDTH, HEIGHT, TIMER_EVENT_PLAYER
 from game_object.game_obj import GameObjectSprite
 from game_object.vec2 import Vec2
 from game_object.bullet.bullet import Bullet
-from config import FIELD_H_SIZE, FIELD_W_SIZE
 
 if TYPE_CHECKING:
     from game_object.field import Field
@@ -31,17 +30,17 @@ class PlayerSprite(GameObjectSprite):
             self.view_directions[angle] = pygame.transform.rotate(image, -angle)
 
     def get_view_direction_image(self):
-        vec = self.parent.key_processor.get_vector()
+        vec = self.parent.last_direction
         for v in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1), Vec2(0, 0)]):
             if v == vec:
                 return 
         view_direction_angle = {
             Vec2(x=0, y=-1): 0,
-            Vec2(x=+1, y=0): 90,
+            Vec2(x=+1, y=0): 270,
             Vec2(x=0, y=+1): 180,
-            Vec2(x=-1, y=0): 270,
+            Vec2(x=-1, y=0): 90,
         }[vec]
-        self.scaled_image = self.view_directions[view_direction_angle]
+        self.scaled_image = pygame.transform.rotate(self.orig_image, view_direction_angle)
 
     def update(self):
         self.get_view_direction_image()
@@ -83,6 +82,8 @@ class Player:
         self.sprite = PlayerSprite(pos, 'player.png', parent=self)
         self.key_processor = PlayerKeyProcessor(parent=self)
         self.last_direction = Vec2(0, 1)
+        self.dir_possible = [Vec2(x = +1, y = 0), Vec2(x = -1, y =0), Vec2(x = 0, y = +1), Vec2(x = 0, y = -1)]
+        self.timer = TIMER_EVENT_PLAYER
         
 
     def move(self, strategyPlayer): #draw_path in args
@@ -106,6 +107,21 @@ class Player:
         bullet.sprite.update_field_pos(self.pos+self.last_direction)
         self.parent.bullets.append(bullet)
         self.parent.add_bullet_in_field(bullet)
+
+    def randomMove(self, nextPos):
+        self.timer -= 1
+        if self.timer == 0:
+            dirMove = Vec2((nextPos.x - self.pos.x), (nextPos.y - self.pos.y))
+            print(dirMove)
+            if not dirMove == Vec2(0, 0):
+                self.last_direction = dirMove
+            
+            if self.parent.can_move_to_pos(nextPos) :
+                self.pos = nextPos
+                self.sprite.update_field_pos(self.pos)
+            self.timer = TIMER_EVENT_PLAYER
+        
+
 
         
             

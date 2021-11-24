@@ -11,13 +11,13 @@ from game_object.vec2 import Vec2
             self.previous = None"""
 
 class Astare:
-    def __init__(self, set_nodes, hueristics, numberNodes, target):
+    def __init__(self, set_nodes, hueristics, numberNodes):
         self.numberNodes = numberNodes
         self.g = [0 for i in range(self.numberNodes)]
         self.previous = [None for i in range(self.numberNodes)]
         self.graph = None
         self.start = None
-        self.target = target
+        self.target = None
         self.hueristics = hueristics
         self.set_nodes = set_nodes
         self.open = []
@@ -26,11 +26,12 @@ class Astare:
         self.new_open_node = []
         self.current_node = None
 
-    def algorithm(self, graph, start): 
+    def algorithm(self, graph, start, target): 
         self.g = [0 for i in range(self.numberNodes)]
         self.previous = [None for i in range(self.numberNodes)]
         self.graph = graph
         self.start = start
+        self.target = target
         self.open = [self.start]
         self.closed = []
         while self.open:

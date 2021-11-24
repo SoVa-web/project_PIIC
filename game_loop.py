@@ -31,14 +31,13 @@ class GameLoop:
         self.list_path = []
         self.draw_path = self.draw_path_dfs
         self.strategyPlayerMove = self.strategyPlayer
-        print("Using DFS")
         self.num_algoriyhm = 2
         self.hueristics = self.graph.shortestDistancesInStraightLine()
-        self.targetPlayer = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
-        while not self.field.can_move_to_pos(self.targetPlayer):
-            self.targetPlayer = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
-        self.astare = Astare(self.graph.set_nodes, self.hueristics, FIELD_H_SIZE*FIELD_W_SIZE, self.graph.set_nodes.index(self.targetPlayer) )
-
+        self.astare = Astare(self.graph.set_nodes, self.hueristics, FIELD_H_SIZE*FIELD_W_SIZE)
+        self.targetPlayer = None
+        self.choosingTarget()
+        self.winner = ""
+        
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
 
@@ -60,10 +59,6 @@ class GameLoop:
                     if self.num_algoriyhm == 2:
                         self.draw_path = self.draw_path_dfs
                         print("Using DFS")
-                    """ if self.num_algoriyhm == 3:
-                        self.draw_path = self.draw_path_ucs
-                        print(3)
-                    """
 
                     
 
@@ -81,18 +76,15 @@ class GameLoop:
         self.is_running = True
         self.end = True
         frame = 0
-       
         while self.is_running and self.end:
             frame += 1
             self.clock.tick(FPS)
             self.process_events()
             self.field.draw(screen)
-            
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
-                    player.move(self.strategyPlayerMove) #self.draw_path in first args
-                    self.field.surface.fill((0, 0, 0))
-                    screen.blit(self.field.surface, ((self.targetPlayer.x*(WIDTH//FIELD_W_SIZE)), (self.targetPlayer.y*(HEIGHT//FIELD_H_SIZE))))
+                    #player.move(self.strategyPlayerMove) #self.draw_path in first args
+                    self.strategyPlayer(player)
                 for opponent in self.field.opponents:
                     opponent.random_move()#self.draw_path in first args
                 for bullet in self.field.bullets:
@@ -107,15 +99,16 @@ class GameLoop:
             for path in self.list_path:
                 for ver in path:
                     screen.blit(self.field.surface, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
+            screen.blit(self.field.surface, ((self.targetPlayer.x*(WIDTH//FIELD_W_SIZE)), (self.targetPlayer.y*(HEIGHT//FIELD_H_SIZE))))
             pygame.display.flip()
 
         screen_end = pygame.display.set_mode((WIDTH, HEIGHT))
         winner = ""
         if len(self.field.players) == 0:
-            winner = "Opponent"
+            self.winner = "Opponent"
         if len(self.field.opponents) == 0:
-            winner = "Player"
-        result = Result(screen_end, winner)
+            self.winner = "Player"
+        result = Result(screen_end, self.winner)
         while self.end and not self.is_running:
             frame += 1
             self.clock.tick(FPS)
@@ -124,44 +117,55 @@ class GameLoop:
             pygame.display.flip()
 
     def draw_path_dfs(self):
-        #sp = time.time()
-
         self.list_path = []
         for player  in self.field.players:
             for opponent in self.field.opponents:
                 path = self.graph.dfs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
                 #self.list_path.append(path)
-
-        #print(time.time()-sp)
         
     def draw_path_bfs(self):
-        #sp = time.time()
-
         self.list_path = []
         for player  in self.field.players:
             for opponent in self.field.opponents:
                 path = self.graph.bfs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
                 #self.list_path.append(path)
 
-        #print(time.time()-sp)
-
-    def draw_path_ucs(self):
-        #sp = time.time()
-
-        self.list_path = []
-        for player  in self.field.players:
-            for opponent in self.field.opponents:
-                path = self.graph.ucs(self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(opponent.pos))
-                self.list_path.append(path)
-
-        #print(time.time()-sp)
 
     def strategyPlayer(self, player):
-        sp = time.time()
         self.list_path = []
-        path = self.astare.algorithm(self.graph.matrix_adjacency, self.graph.set_nodes.index(player.pos))
+        path = self.astare.algorithm(self.graph.matrix_adjacency, self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(self.targetPlayer) )
         self.list_path.append(path)
-        print("A* time : " + str(time.time()-sp))
+        if len(path) > 1:
+            path.pop(0)
+        if len(path) > 0:
+            player.randomMove(path[0])
+        if player.pos == path[-1]:
+                self.choosingTarget()
+            
+
+    #checking if we can get to the target
+    def consist(self):
+        self.list_path = []
+        path = []
+        for player  in self.field.players:
+            path = self.astare.algorithm(self.graph.matrix_adjacency, self.graph.set_nodes.index(player.pos), self.graph.set_nodes.index(self.targetPlayer) )
+            if len(path) == 0:
+                return False
+            if len(path) > 1:
+                path.pop(0)
+            if len(path) > 0:
+                player.randomMove(path[0])
+            if player.pos == path[-1]:
+                self.choosingTarget()
                 
+    
+        self.list_path.append(path)
+        return True 
+
+    #use it to select a new target
+    def choosingTarget(self):
+        self.targetPlayer = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
+        while not self.field.can_move_to_pos(self.targetPlayer) or not self.consist():
+            self.targetPlayer = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
         
 

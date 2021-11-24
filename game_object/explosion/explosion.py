@@ -35,4 +35,5 @@ class Explosion:
                                 graph.list_adjacency[graph.set_nodes.index(self.sprite.pos)].append(index_adj)
                                 graph.list_adjacency[index_adj].append(graph.set_nodes.index(self.sprite.pos))
             #draw_path()
-            strategyPlayerMove(self.parent.parent.players[0])
+            for player in self.parent.parent.players:
+                strategyPlayerMove(player)
