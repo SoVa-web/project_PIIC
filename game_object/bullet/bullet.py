@@ -51,6 +51,11 @@ class Bullet:
                     i.sprite.kill()
                     self.parent.opponents.remove(i)
                     self.explosion_show()
+            for i in self.parent.stupid_opponents:
+                if i.pos.x == self.pos.x and i.pos.y == self.pos.y and not self.source == "Opponent":
+                    i.sprite.kill()
+                    self.parent.stupid_opponents.remove(i)
+                    self.explosion_show()
             for i in self.parent.players:
                 if i.pos.x == self.pos.x and i.pos.y == self.pos.y  and not self.source == "Player":
                     i.sprite.kill()

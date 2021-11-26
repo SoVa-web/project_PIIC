@@ -22,9 +22,11 @@ class Field:
         self.h_size = h_size
         self.players = []
         self.opponents = []
+        self.stupid_opponents = []
         self.barriers = []
         self.num_chain_block = 16
         self.num_opponents = 1
+        self.num_stupid_opponents = 2
         self.bullets = []
         self.explosions = []
         self.surface_player = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
@@ -43,7 +45,13 @@ class Field:
             vec = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
             if self.can_move_to_pos(vec):
                 self.num_opponents-=1
-                self.opponents.append(Opponent(self, vec))
+                self.opponents.append(Opponent(self, 'opponent.png', vec))
+
+        while self.num_stupid_opponents!=0:
+            vec = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
+            if self.can_move_to_pos(vec):
+                self.num_stupid_opponents-=1
+                self.stupid_opponents.append(Opponent(self, 'tank_green.png', vec))
              
         #--generating barriers positions--
         while self.num_chain_block != 0:
@@ -79,6 +87,9 @@ class Field:
         for opponent in self.opponents:
             self.sprites.add(opponent.sprite)
 
+        for opponent in self.stupid_opponents:
+            self.sprites.add(opponent.sprite)
+
         #--adding barriers to sprites on the field--
         for barrier in self.barriers:
             self.sprites.add(barrier.sprite)
@@ -100,14 +111,14 @@ class Field:
         if not (0 <= pos.x < self.w_size and 0 <= pos.y < self.h_size):
             return False
         #--if there is an obstacle or a player in the cell, then you cannot move there--
-        for game_obj in itertools.chain(self.players, self.opponents,  self.barriers):
+        for game_obj in itertools.chain(self.players, self.opponents, self.stupid_opponents,  self.barriers):
             if game_obj.pos == pos:
                 return False
         return True
 
     #--"Can the bullet explosion this cell?"--
     def can_explosion_this(self, pos: Vec2):
-        for game_obj in itertools.chain(self.opponents, self.barriers, self.players):
+        for game_obj in itertools.chain(self.opponents, self.stupid_opponents, self.barriers, self.players):
             if game_obj.pos == pos:
                 return True
         return False
@@ -151,7 +162,7 @@ class Field:
     def draw(self, screen):
         screen.fill((130, 178, 137))
         self.draw_grid(screen)
-        for game_obj in itertools.chain(self.players, self.barriers, self.bullets, self.explosions, self.opponents):
+        for game_obj in itertools.chain(self.players, self.barriers, self.bullets, self.explosions, self.opponents, self.stupid_opponents):
             game_obj.sprite.set_field_size_info(self.cell_size, self.w_padding, self.h_padding)
             
 

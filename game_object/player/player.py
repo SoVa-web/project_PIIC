@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pygame
+import itertools
 
 import random
 from config import WIDTH, HEIGHT, TIMER_EVENT_PLAYER
@@ -117,7 +118,7 @@ class Player:
             if self.parent.can_move_to_pos(nextPos) :
                 self.pos = nextPos
                 self.sprite.update_field_pos(self.pos)
-            for op in self.parent.opponents:
+            for op in itertools.chain(self.parent.opponents, self.parent.stupid_opponents):
                 if op.pos.x == self.pos.x or op.pos.y == self.pos.y:
                     self.shot()
             self.timer = TIMER_EVENT_PLAYER

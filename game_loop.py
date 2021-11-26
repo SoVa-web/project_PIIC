@@ -90,30 +90,32 @@ class GameLoop:
                 for opponent in self.field.opponents:
                     #opponent.random_move()#self.draw_path in first args
                     opponent.random_shot()
+                for opponent in self.field.stupid_opponents:
+                    opponent.move()
                 self.draw_path()
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
                 for explosion in self.field.explosions:
                     explosion.delete(self.graph, self.strategyPlayerMove)#self.draw_path in second args
                 frame = 0
-            if len(self.field.players) == 0 or len(self.field.opponents) == 0:
+            if len(self.field.players) == 0 or len(self.field.opponents + self.field.stupid_opponents) == 0:
                 self.is_running = False
             self.field.sprites.update()
             self.field.sprites.draw(screen)
-            for path in self.list_path_players:
+            """ for path in self.list_path_players:
                 for ver in path:
                     screen.blit(self.field.surface_player, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
             for path in self.list_path_opponents:
                 for ver in path:
                     screen.blit(self.field.surface_opponent, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
-            screen.blit(self.field.surface_player, ((self.targetPlayer.x*(WIDTH//FIELD_W_SIZE)), (self.targetPlayer.y*(HEIGHT//FIELD_H_SIZE))))
+            screen.blit(self.field.surface_player, ((self.targetPlayer.x*(WIDTH//FIELD_W_SIZE)), (self.targetPlayer.y*(HEIGHT//FIELD_H_SIZE))))"""
             pygame.display.flip()
 
         screen_end = pygame.display.set_mode((WIDTH, HEIGHT))
         winner = ""
         if len(self.field.players) == 0:
             winner = "Opponent"
-        if len(self.field.opponents) == 0:
+        if len(self.field.opponents + self.field.stupid_opponents) == 0:
             winner = "Player"
         result = Result(screen_end, winner)
         while self.end and not self.is_running:

@@ -46,14 +46,15 @@ class OpponentSprite(GameObjectSprite):
         super().update()
 
 class Opponent:
-    def __init__(self, parent: 'Field', pos: Vec2 = Vec2()):
+    def __init__(self, parent: 'Field', img:str, pos: Vec2 = Vec2()):
         self.parent = parent
         self.pos = pos
-        self.sprite = OpponentSprite(pos, 'opponent.png', parent=self)
+        self.sprite = OpponentSprite(pos, img, parent=self)
         self.last_direction = Vec2(0, 1)
         self.dir_possible = [Vec2(x = +1, y = 0), Vec2(x = -1, y =0), Vec2(x = 0, y = +1), Vec2(x = 0, y = -1)]
         self.rand_dir = self.dir_possible[random.randint(0, 3)]
         self.timer = TIMER_EVENT_OPPONENT
+        self.stupid_timer = TIMER_EVENT_OPPONENT
         self.timer_bul = TIMER_BULLET_OPPONENT
 
     def random_move(self, next_pos):#, draw_path
@@ -81,4 +82,19 @@ class Opponent:
             self.parent.bullets.append(bullet)
             self.parent.add_bullet_in_field(bullet)
             self.timer_bul = TIMER_BULLET_OPPONENT
+    
+    def move(self):
+        self.stupid_timer -= 1
+        if self.stupid_timer == 0:
+            rand_dir = self.dir_possible[random.randint(0, 3)]
+            self.rand_dir = rand_dir
+            next_pos = self.pos + self.rand_dir
+            if not self.rand_dir == Vec2(0, 0):
+                self.last_direction = self.rand_dir
+            if self.parent.can_move_to_pos(next_pos) :
+                self.pos = next_pos
+                self.random_shot()
+            # else сменить направление#
+            self.sprite.update_field_pos(self.pos) 
+            self.stupid_timer = TIMER_EVENT_OPPONENT
         
