@@ -25,8 +25,8 @@ class Field:
         self.stupid_opponents = []
         self.barriers = []
         self.num_chain_block = 16
-        self.num_opponents = 3
-        self.num_stupid_opponents = 0
+        self.num_opponents = 1
+        self.num_stupid_opponents = 1
         self.bullets = []
         self.explosions = []
         self.surface_player = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
