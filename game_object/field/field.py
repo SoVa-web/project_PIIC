@@ -25,7 +25,7 @@ class Field:
         self.stupid_opponents = []
         self.barriers = []
         self.num_chain_block = 16
-        self.num_opponents = 1
+        self.num_opponents = 2
         self.num_stupid_opponents = 2
         self.bullets = []
         self.explosions = []

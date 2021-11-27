@@ -75,8 +75,8 @@ class Opponent:
             #draw_path()
 
     def random_shot(self):
-        self.timer_bul -= 1
-        if self.timer_bul == 0:
+       self.timer_bul -= 1
+       if self.timer_bul == 0:
             bullet = Bullet(self.parent, self.pos+self.last_direction, self.last_direction, "Opponent")
             bullet.sprite.update_field_pos(self.pos+self.last_direction)
             self.parent.bullets.append(bullet)

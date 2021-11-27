@@ -45,7 +45,6 @@ class GameLoop:
 
             #--if we click "Close Window"--
             if event.type == pygame.QUIT:
-                self.is_running = False
                 self.end = False
 
             #--if we pressed a key--
@@ -69,7 +68,6 @@ class GameLoop:
                 for player in self.field.players:
                     player.key_processor.process_key_up_event(event)
                 if event.key == pygame.K_RETURN:
-                    self.is_running = False
                     GameLoop().start()
 
             
@@ -85,10 +83,8 @@ class GameLoop:
             self.field.draw(screen)
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
-                    #player.move(self.strategyPlayerMove) #self.draw_path in first args
                     self.strategyPlayer(player)
                 for opponent in self.field.opponents:
-                    #opponent.random_move()#self.draw_path in first args
                     opponent.random_shot()
                 for opponent in self.field.stupid_opponents:
                     opponent.move()
@@ -96,19 +92,12 @@ class GameLoop:
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
                 for explosion in self.field.explosions:
-                    explosion.delete(self.graph, self.strategyPlayerMove)#self.draw_path in second args
+                    explosion.delete(self.graph, self.strategyPlayerMove)
                 frame = 0
             if len(self.field.players) == 0 or len(self.field.opponents + self.field.stupid_opponents) == 0:
                 self.is_running = False
             self.field.sprites.update()
             self.field.sprites.draw(screen)
-            """ for path in self.list_path_players:
-                for ver in path:
-                    screen.blit(self.field.surface_player, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
-            for path in self.list_path_opponents:
-                for ver in path:
-                    screen.blit(self.field.surface_opponent, ((ver.x*(WIDTH//FIELD_W_SIZE)), (ver.y*(HEIGHT//FIELD_H_SIZE))))
-            screen.blit(self.field.surface_player, ((self.targetPlayer.x*(WIDTH//FIELD_W_SIZE)), (self.targetPlayer.y*(HEIGHT//FIELD_H_SIZE))))"""
             pygame.display.flip()
 
         screen_end = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -168,8 +157,6 @@ class GameLoop:
                 player.randomMove(path[0])
             if player.pos == path[-1]:
                 self.choosingTarget()
-                
-    
         self.list_path_players.append(path)
         return True 
 

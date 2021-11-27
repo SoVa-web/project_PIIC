@@ -4,7 +4,7 @@ import pygame
 import itertools
 
 import random
-from config import WIDTH, HEIGHT, TIMER_EVENT_PLAYER
+from config import WIDTH, HEIGHT, TIMER_EVENT_PLAYER, FPS
 from game_object.game_obj import GameObjectSprite
 from game_object.vec2 import Vec2
 from game_object.bullet.bullet import Bullet
@@ -119,11 +119,37 @@ class Player:
                 self.pos = nextPos
                 self.sprite.update_field_pos(self.pos)
             for op in itertools.chain(self.parent.opponents, self.parent.stupid_opponents):
-                if op.pos.x == self.pos.x or op.pos.y == self.pos.y:
-                    self.shot()
+                if op.pos.x == self.pos.x and self.last_direction.x == 0: 
+                    if op.pos.y >= self.pos.y:
+                        self.last_direction = Vec2(0, 1)
+                        self.sprite.update_field_pos(self.pos)
+                        self.shot()
+                    if op.pos.y < self.pos.y:
+                        self.last_direction = Vec2(0, -1)
+                        self.sprite.update_field_pos(self.pos)
+                        self.shot()
+                if op.pos.y == self.pos.y and self.last_direction.y == 0:
+                    if op.pos.x >= self.pos.x:
+                        self.last_direction = Vec2(1, 0)
+                        self.sprite.update_field_pos(self.pos)
+                        self.shot()
+                    if op.pos.x < self.pos.x:
+                        self.last_direction = Vec2(-1, 0)
+                        self.sprite.update_field_pos(self.pos)
+                        self.shot()
             self.timer = TIMER_EVENT_PLAYER
+    
+""" def move(self):
+        for vec in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1)]):
+            if vec == self.last_direction:
+                return 
+        next_pos = self.pos + self.last_direction
+        if self.parent.can_move_to_pos(next_pos) :
+            self.pos = next_pos
+        # else сменить направление#
+        self.sprite.update_field_pos(self.pos)
         
-
+"""
 
         
             
