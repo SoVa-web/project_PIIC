@@ -1,4 +1,5 @@
 import pygame
+from config import WIDTH
 
 from data_loaders import icon
 from game_object import Vec2

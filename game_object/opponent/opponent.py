@@ -66,10 +66,10 @@ class Opponent:
             dir = Vec2((next_pos.x - self.pos.x), (next_pos.y - self.pos.y))
             if not dir == Vec2(0, 0):
                 self.last_direction = dir
+                self.random_shot()
             if self.parent.can_move_to_pos(next_pos) :
                 self.pos = next_pos
                 self.sprite.update_field_pos(self.pos)
-                self.random_shot()
             # else сменить направление#
             self.timer = TIMER_EVENT_OPPONENT
             #draw_path()
@@ -91,9 +91,9 @@ class Opponent:
             next_pos = self.pos + self.rand_dir
             if not self.rand_dir == Vec2(0, 0):
                 self.last_direction = self.rand_dir
+                self.random_shot()
             if self.parent.can_move_to_pos(next_pos) :
                 self.pos = next_pos
-                self.random_shot()
             # else сменить направление#
             self.sprite.update_field_pos(self.pos) 
             self.stupid_timer = TIMER_EVENT_OPPONENT

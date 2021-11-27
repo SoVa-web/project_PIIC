@@ -110,34 +110,34 @@ class Player:
         self.parent.add_bullet_in_field(bullet)
 
     def randomMove(self, nextPos):
-        self.timer -= 1
-        if self.timer == 0:
-            dirMove = Vec2((nextPos.x - self.pos.x), (nextPos.y - self.pos.y))
-            if not dirMove == Vec2(0, 0):
-                self.last_direction = dirMove
-            if self.parent.can_move_to_pos(nextPos) :
-                self.pos = nextPos
-                self.sprite.update_field_pos(self.pos)
-            for op in itertools.chain(self.parent.opponents, self.parent.stupid_opponents):
-                if op.pos.x == self.pos.x and self.last_direction.x == 0: 
-                    if op.pos.y >= self.pos.y:
-                        self.last_direction = Vec2(0, 1)
-                        self.sprite.update_field_pos(self.pos)
-                        self.shot()
-                    if op.pos.y < self.pos.y:
-                        self.last_direction = Vec2(0, -1)
-                        self.sprite.update_field_pos(self.pos)
-                        self.shot()
-                if op.pos.y == self.pos.y and self.last_direction.y == 0:
-                    if op.pos.x >= self.pos.x:
-                        self.last_direction = Vec2(1, 0)
-                        self.sprite.update_field_pos(self.pos)
-                        self.shot()
-                    if op.pos.x < self.pos.x:
-                        self.last_direction = Vec2(-1, 0)
-                        self.sprite.update_field_pos(self.pos)
-                        self.shot()
-            self.timer = TIMER_EVENT_PLAYER
+            self.timer -= 1
+            if self.timer == 0:
+                dirMove = Vec2((nextPos.x - self.pos.x), (nextPos.y - self.pos.y))
+                if not dirMove == Vec2(0, 0):
+                    self.last_direction = dirMove
+                if self.parent.can_move_to_pos(nextPos) :
+                    self.pos = nextPos
+                    self.sprite.update_field_pos(self.pos)
+                for op in itertools.chain(self.parent.opponents, self.parent.stupid_opponents):
+                    if op.pos.x == self.pos.x and self.last_direction.x == 0: 
+                        if op.pos.y >= self.pos.y:
+                            self.last_direction = Vec2(0, 1)
+                            self.sprite.update_field_pos(self.pos)
+                            self.shot()
+                        if op.pos.y < self.pos.y:
+                            self.last_direction = Vec2(0, -1)
+                            self.sprite.update_field_pos(self.pos)
+                            self.shot()
+                    if op.pos.y == self.pos.y and self.last_direction.y == 0:
+                        if op.pos.x >= self.pos.x:
+                            self.last_direction = Vec2(1, 0)
+                            self.sprite.update_field_pos(self.pos)
+                            self.shot()
+                        if op.pos.x < self.pos.x:
+                            self.last_direction = Vec2(-1, 0)
+                            self.sprite.update_field_pos(self.pos)
+                            self.shot()
+                self.timer = TIMER_EVENT_PLAYER
     
 """ def move(self):
         for vec in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1)]):

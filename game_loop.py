@@ -1,9 +1,11 @@
 from typing import Any
 import pygame 
 import itertools
+import sys
 
 import config
 from config import WIDTH, HEIGHT, FPS, FIELD_W_SIZE, FIELD_H_SIZE
+from game_object import vec2
 from game_object.field import Field
 from game_object.vec2 import Vec2
 from result_game import Result
@@ -11,6 +13,7 @@ from game_object.graph.graph import Graph
 import time
 from game_object.astare.astare import Astare
 import random
+from game_object.alphabeta.alphabeta import MinimaxAlphaBeta
 
 pygame.init()
 
@@ -31,14 +34,15 @@ class GameLoop:
         self.graph = Graph(self.field)
         self.list_path_players = []
         self.list_path_opponents = []
+        self.dir = [Vec2(0, 1), Vec2(0, -1), Vec2(1, 0), Vec2(-1, 0)]
         self.draw_path = self.draw_path_bfs
         self.strategyPlayerMove = self.strategyPlayer
         self.num_algoriyhm = 2
         self.hueristics = self.graph.shortestDistancesInStraightLine()
         self.astare = Astare(self.graph.set_nodes, self.hueristics, FIELD_H_SIZE*FIELD_W_SIZE)
-        self.targetPlayer = None
-        self.choosingTarget()
-        self.draw_path()
+        #self.targetPlayer = None
+        #self.choosingTarget()
+        self.strategyOpponents()
         
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
@@ -83,16 +87,16 @@ class GameLoop:
             self.field.draw(screen)
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
-                    self.strategyPlayer(player)
+                    #self.strategyPlayer(player)
+                    self.minimax(player)
                 for opponent in self.field.opponents:
-                    opponent.random_shot()
+                    self.strategyOpponents()
                 for opponent in self.field.stupid_opponents:
                     opponent.move()
-                self.draw_path()
                 for bullet in self.field.bullets:
                     bullet.bullet_move()
                 for explosion in self.field.explosions:
-                    explosion.delete(self.graph, self.strategyPlayerMove)
+                    explosion.delete(self.graph)
                 frame = 0
             if len(self.field.players) == 0 or len(self.field.opponents + self.field.stupid_opponents) == 0:
                 self.is_running = False
@@ -141,6 +145,18 @@ class GameLoop:
             player.randomMove(path[0])
         if player.pos == path[-1]:
                 self.choosingTarget()
+
+    def strategyOpponents(self):
+        self.list_path_opponents = []
+        for op in self.field.opponents:
+            path = self.astare.algorithm(self.graph.matrix_adjacency, self.graph.set_nodes.index(op.pos), self.graph.set_nodes.index(self.field.players[0].pos) )
+            self.list_path_opponents.append(path)
+            if len(path) > 1:
+                path.pop(0)
+            if len(path) > 0:
+                op.random_move(path[0])
+            else:
+                op.move()
             
 
     #checking if we can get to the target
@@ -155,6 +171,10 @@ class GameLoop:
                 path.pop(0)
             if len(path) > 0:
                 player.randomMove(path[0])
+            else:
+                player.randomMove(player.pos + self.dir[random.randint(0, 3)])
+                print(player.pos + self.dir[random.randint(0, 3)])
+                player.shot()
             if player.pos == path[-1]:
                 self.choosingTarget()
         self.list_path_players.append(path)
@@ -165,5 +185,25 @@ class GameLoop:
         self.targetPlayer = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
         while not self.field.can_move_to_pos(self.targetPlayer) or not self.consist():
             self.targetPlayer = Vec2(random.randint(0, FIELD_W_SIZE-1), random.randint(0, FIELD_H_SIZE-1))
-        
+
+    def minimax(self, player):
+        tm = time.time()
+        self.directions = [ 
+            Vec2(x=-1, y=0),
+            Vec2(x=+1, y=0),
+            Vec2(x=0, y=+1),
+            Vec2(x=0, y=-1)
+        ]
+        best_mov = None
+        best_evl = - sys.maxsize
+        op = [opponent.pos for opponent in (self.field.opponents + self.field.stupid_opponents)]
+        for d in self.directions:
+            best = player.pos + d
+            cur_evl = MinimaxAlphaBeta(self.field).minimax([best], op, 0, 1, False, -1000 , +1000 )
+            if cur_evl >= best_evl:
+                best_evl = cur_evl
+                best_mov = d
+        player.randomMove(player.pos + best_mov)
+        print("time")
+        print(time.time() - tm)
 
