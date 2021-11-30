@@ -31,8 +31,8 @@ class BulletSprite(GameObjectSprite):
 class Bullet:
     def __init__(self, parent = 'Field', pos: Vec2 = Vec2(), dir:Vec2 = Vec2(), source: str = str()):
         self.parent = parent
-        self.pos = pos
-        self.dir = dir
+        self.pos    = pos
+        self.dir    = dir
         self.sprite = BulletSprite(self.pos, self.dir, 'shotOrange.png', parent=self)
         self.source = source
         
@@ -46,23 +46,32 @@ class Bullet:
                     i.sprite.kill()
                     self.parent.barriers.remove(i)
                     self.explosion_show()
+                    if self.source == "Opponent":
+                        self.parent.score_opponent += 1
+                    else:
+                        self.parent.score_player += 1
             for i in self.parent.opponents:
                 if i.pos.x == self.pos.x and i.pos.y == self.pos.y and not self.source == "Opponent":
                     i.sprite.kill()
                     self.parent.opponents.remove(i)
                     self.explosion_show()
+                    self.parent.score_player += 5
             for i in self.parent.stupid_opponents:
                 if i.pos.x == self.pos.x and i.pos.y == self.pos.y and not self.source == "Opponent":
                     i.sprite.kill()
                     self.parent.stupid_opponents.remove(i)
                     self.explosion_show()
+                    self.parent.score_player += 5
             for i in self.parent.players:
                 if i.pos.x == self.pos.x and i.pos.y == self.pos.y  and not self.source == "Player":
                     i.sprite.kill()
                     self.parent.players.remove(i)
                     self.explosion_show()
+                    self.parent.score_opponent += 5
             self.sprite.kill()
             self.parent.bullets.remove(self)
+        print("Result scores of Player: ")
+        print(self.parent.score_player)
         self.pos = next_pos         
 
     def explosion_show(self):

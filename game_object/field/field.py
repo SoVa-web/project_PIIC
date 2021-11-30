@@ -35,6 +35,8 @@ class Field:
         self.surface_opponent = pygame.Surface((WIDTH//FIELD_W_SIZE, HEIGHT//FIELD_H_SIZE))
         self.surface_opponent.fill((0, 0, 0))
         self.surface_opponent.set_alpha(150)
+        self.score_player = 0
+        self.score_opponent = 0
 
 
         #--add player--
