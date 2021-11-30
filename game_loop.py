@@ -2,6 +2,7 @@ from typing import Any
 import pygame 
 import itertools
 import sys
+import csv
 
 import config
 from config import WIDTH, HEIGHT, FPS, FIELD_W_SIZE, FIELD_H_SIZE
@@ -14,7 +15,7 @@ import time
 from game_object.astare.astare import Astare
 import random
 from game_object.alphabeta.alphabeta import MinimaxAlphaBeta
-
+from game_object.expectimax.expectimax import Expectimax
 pygame.init()
 
 
@@ -43,6 +44,8 @@ class GameLoop:
         #self.targetPlayer = None
         #self.choosingTarget()
         self.strategyOpponents()
+
+        self.filename = "result_games.csv"
         
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
@@ -77,6 +80,7 @@ class GameLoop:
             
 
     def start(self):
+        tm_start = time.time()
         self.is_running = True
         self.end = True
         frame = 0
@@ -110,6 +114,13 @@ class GameLoop:
             winner = "Opponent"
         if len(self.field.opponents + self.field.stupid_opponents) == 0:
             winner = "Player"
+
+        tm_end = time.time() - tm_start
+        with open(self.filename, "a", newline="") as file:
+            result = [winner, self.field.score_player, tm_end,"expectimax"]
+            writer = csv.writer(file)
+            writer.writerow(result)
+        
         result = Result(screen_end, winner)
         while self.end and not self.is_running:
             frame += 1
@@ -199,7 +210,8 @@ class GameLoop:
         op = [opponent.pos for opponent in (self.field.opponents + self.field.stupid_opponents)]
         for d in self.directions:
             best = player.pos + d
-            cur_evl = MinimaxAlphaBeta(self.field).minimax([best], op, 0, 1, False, -1000 , +1000 )
+            #cur_evl = MinimaxAlphaBeta(self.field).minimax([best], op, 0, 1, False, -1000 , +1000 )
+            cur_evl = Expectimax(self.field).expectimax([best], op, 0, 1, False)
             if cur_evl >= best_evl:
                 best_evl = cur_evl
                 best_mov = d
