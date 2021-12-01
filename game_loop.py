@@ -110,18 +110,21 @@ class GameLoop:
 
         screen_end = pygame.display.set_mode((WIDTH, HEIGHT))
         winner = ""
+        winner_index = 0
         if len(self.field.players) == 0:
             winner = "Opponent"
+            winner_index = 0
         if len(self.field.opponents + self.field.stupid_opponents) == 0:
             winner = "Player"
+            winner_index = 1
 
         tm_end = time.time() - tm_start
         with open(self.filename, "a", newline="") as file:
-            result = [winner, self.field.score_player, tm_end,"expectimax"]
+            result = [winner_index, self.field.score_player, tm_end, 1]
             writer = csv.writer(file)
             writer.writerow(result)
-        
         result = Result(screen_end, winner)
+        #GameLoop().start()
         while self.end and not self.is_running:
             frame += 1
             self.clock.tick(FPS)
