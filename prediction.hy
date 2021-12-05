@@ -1,11 +1,12 @@
 (import numpy)
-(import [matplotlib [pyplot :as plt]])
+(import [sklearn [preprocessing]])
 (import seaborn)
 (import pandas)
 (import [sklearn.preprocessing [OrdinalEncoder]])
+(import [sklearn.preprocessing [MinMaxScaler]])
 (import [sklearn.model_selection [train_test_split]])
 (import [sklearn.linear_model [LinearRegression]])
-
+(import [matplotlib [pyplot :as plt]])
 
 (defn divide_dataset [data]
     [(data.drop "score_player" :axis 1) data.score_player])
@@ -21,17 +22,20 @@
 (print "Dataset")
 (print (dataset.head))
 
+;(setv names data.columns)
+;(setv scaler (MinMaxScaler))
+
+;diagram dependencies win before normalization
+(diagram_win_dependencies dataset)
+
+
+;(setv dataset(pandas.DataFrame (scaler.fit_transform data) :columns names))
+
+;(diagram_win_dependencies dataset)
+
 ;train and test dataset
 (setv test_dataset(cut dataset 0 5))
 (setv train_dataset (cut dataset 5 (len dataset)))
-
-;diagram dependencies win before normalization
-(diagram_win_dependencies train_dataset)
-
-;there should be normalization)))))
-
-;diagram dependencies win after normalization
-(diagram_win_dependencies train_dataset)
 
 ;division into dependent and independent var
 (setv x (get (divide_dataset train_dataset) 0))
@@ -49,8 +53,9 @@
 
 (setv encoder (OrdinalEncoder))
 
-(assoc x_train columns (encoder.fit_transform (get x_train columns)))
-(assoc x_valid columns (encoder.transform (get x_valid columns)))
+(assoc x_train columns (encoder.fit_transform  (get x_train columns)))
+
+
 
 ;regression
 (setv regressionModel (LinearRegression))
@@ -60,7 +65,6 @@
 (setv x_test (get (divide_dataset test_dataset) 0))
 (setv y_test (get (divide_dataset test_dataset) 1))
 
-(assoc x_test columns (encoder.transform (get x_test columns)))
 (setv y_pred (regressionModel.predict x_test))
 
 (print "Prediction:")
