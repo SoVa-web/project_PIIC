@@ -3,6 +3,7 @@ import pygame
 import itertools
 import sys
 import csv
+import math
 
 import config
 from config import WIDTH, HEIGHT, FPS, FIELD_W_SIZE, FIELD_H_SIZE
@@ -120,17 +121,18 @@ class GameLoop:
 
         tm_end = time.time() - tm_start
         with open(self.filename, "a", newline="") as file:
-            result = [winner_index, self.field.score_player, tm_end, 1]
+            #expectimax - 1, alphabeta - 0
+            result = [winner_index, self.field.score_player, round(tm_end), 1]
             writer = csv.writer(file)
             writer.writerow(result)
         result = Result(screen_end, winner)
-        #GameLoop().start()
-        while self.end and not self.is_running:
+        GameLoop().start()
+        """while self.end and not self.is_running:
             frame += 1
             self.clock.tick(FPS)
             self.process_events()
             result.draw()
-            pygame.display.flip()
+            pygame.display.flip()"""
 
     def draw_path_dfs(self):
         self.list_path = []

@@ -3,12 +3,18 @@
 
 In csv :
 
-In first comlumn:
+    In first comlumn:
 
-Winner is player - 1
-Winner is opponent - 0
+        Winner is player - 1
+        Winner is opponent - 0
 
-In last column:
+    In second column: 
+        Score of player
 
-Expectimax - 1
-Alphabeta - 0
+    In third column: 
+        Duration of game
+
+    In last column:
+
+        Expectimax - 1
+        Alphabeta - 0
