@@ -6,26 +6,35 @@
     [1 0 0 0 1]
     [0 0 0 1 1]
     [0 1 0 1 0]
-    [0 1 1 0 0]
+    [0 0 1 0 0]
     [0 0 0 0 0]
 ])
 
 ;we count from 0
 (setv size_matrix 4)
 (setv max_deep 2)
+(setv directions [
+    [1 0]
+    [-1 0]
+    [0 -1]
+    [0 1]
+])
 
 ;(y, x)
-(setv player [0 1])
-(setv opponent [2 4])
+(setv player [0 2])
+(setv opponent [3 2])
 
 
 (defn hueristic_alpha_beta [])
 
 
-(set y 0)
+(setv value 0)
 (defn minimax [pos_player pos_opponent current_depth isMaximizer]
+    (print "Current depth = " current_depth "; pos player:" pos_player "; pos opponent:" pos_opponent)
    ( if (= current_depth max_deep)
-        (return (hueristic_alpha_beta pos_player pos_opponent))
+       ( do
+       (return (hueristic_alpha_beta pos_player pos_opponent))
+       )
    )
    (if (= isMaximizer True)
        (do
@@ -33,11 +42,10 @@
         (for [move directions]
             (setv y (+ (get pos_player 0) (get move 0)))
             (setv x (+ (get pos_player 1) (get move 1)))
-            (setv pos_player [y x])
-            (setv current_depth (+ current_depth 1))
-            (setv value (minimax pos_player pos_opponent current_depth False))
-            (return (max bestVal value))
-        ))
+            (setv value (minimax [y x] pos_opponent (+ current_depth 1) False))
+        )
+        (return (max bestVal value))
+        )
    )
    (if (= isMaximizer False)
        (do
@@ -45,11 +53,18 @@
         (for [move directions]
             (setv y (+ (get pos_opponent 0) (get move 0)))
             (setv x (+ (get pos_opponent 1) (get move 1)))
-            (setv pos_opponent [y x])
-            (setv current_depth (+ current_depth 1))
-            (setv value (minimax pos_player pos_opponent current_depth True))
-            (return (min bestVal value))
-        ))
+            (setv value (minimax pos_player [y x] (+ current_depth 1) True))
+        )
+        (return (min bestVal value))
+        )
    )
 )
 
+
+(defn hueristic_alpha_beta [pos1 pos2]
+    (setv dist (math.sqrt (+ (* (- (get pos1 0) (get pos2 0)) (- (get pos1 0) (get pos2 0))) (* (- (get pos1 1) (get pos2 1)) (- (get pos1 1) (get pos2 1)))) )
+)
+    (return dist)
+)
+
+(print (minimax player opponent 0 True))
