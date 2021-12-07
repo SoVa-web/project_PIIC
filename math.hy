@@ -23,5 +23,3 @@
 (setv math_exp (/(.sum duration) (len duration)))
 (print "Mathematical expectation:")
 (print math_exp)
-
-
