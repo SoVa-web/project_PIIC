@@ -22,13 +22,13 @@
 
 ;(y, x)
 (setv player [0 2])
-(setv opponent [3 2])
+(setv opponent [3 4])
 
 
 (defn hueristic_alpha_beta [])
 
 
-(setv value 0)
+(setv value 1000)
 (defn minimax [pos_player pos_opponent current_depth isMaximizer]
     (print "Current depth = " current_depth "; pos player:" pos_player "; pos opponent:" pos_opponent)
    ( if (= current_depth max_deep)
@@ -42,6 +42,12 @@
         (for [move directions]
             (setv y (+ (get pos_player 0) (get move 0)))
             (setv x (+ (get pos_player 1) (get move 1)))
+            (setv g (get field y x))
+            (if (or (< y 0)  (< x 0)  (> y size_matrix)  (> x size_matrix) (= (get field y x) 1))
+                (do
+                   (continue)
+                )
+            ) 
             (setv value (minimax [y x] pos_opponent (+ current_depth 1) False))
         )
         (return (max bestVal value))
@@ -53,6 +59,11 @@
         (for [move directions]
             (setv y (+ (get pos_opponent 0) (get move 0)))
             (setv x (+ (get pos_opponent 1) (get move 1)))
+            (if (or (< y 0)  (< x 0)  (> y size_matrix)  (> x size_matrix) (= (get field y x) 1))
+                (do
+                    (continue)
+                )
+            ) 
             (setv value (minimax pos_player [y x] (+ current_depth 1) True))
         )
         (return (min bestVal value))
