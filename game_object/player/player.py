@@ -1,3 +1,13 @@
+# action: 0 - up,               |   state: 0 - number opponents
+#         1 - down,             |          1 - average distance to opponents
+#         2 - left,             |          2 - points
+#         3 - right,            |          3 - number dodges of player under bullets
+#         4 - stay put,         |          4 - number_blocks
+#         5 - up + ballet,      |   
+#         6 - down + ballet,    |
+#         7 - left + ballet,    |   
+#         8 - right + ballet,   |
+#         9 - stay put + ballet
 from typing import TYPE_CHECKING
 
 import pygame
@@ -83,8 +93,9 @@ class Player:
         self.sprite = PlayerSprite(pos, 'player.png', parent=self)
         self.key_processor = PlayerKeyProcessor(parent=self)
         self.last_direction = Vec2(0, 1)
-        self.dir_possible = [Vec2(x = +1, y = 0), Vec2(x = -1, y =0), Vec2(x = 0, y = +1), Vec2(x = 0, y = -1)]
+        self.dir_possible = [Vec2(x = +1, y = 0), Vec2(x = -1, y =0), Vec2(x = 0, y = +1), Vec2(x = 0, y = -1)] #right, left, down, up
         self.timer = TIMER_EVENT_PLAYER
+        self.func_action = None
         
 
     def move(self, strategyPlayer): #draw_path in args
@@ -109,7 +120,117 @@ class Player:
         self.parent.bullets.append(bullet)
         self.parent.add_bullet_in_field(bullet)
 
-    def randomMove(self, nextPos):
+
+    
+    def move(self, action_id):
+            self.switch_case(action_id)
+            self.func_action()
+
+    def switch_case(self, action_id):
+        if (action_id == 0):
+            self.func_action = self.up
+        elif (action_id == 1):
+            self.func_action = self.down
+        elif (action_id == 2):
+            self.func_action = self.left
+        elif (action_id == 3):
+            self.func_action = self.right
+        elif (action_id == 4):
+            self.func_action = self.stay
+        elif (action_id == 5):
+            self.func_action = self.up_plus_shot
+        elif (action_id == 6):
+            self.func_action = self.down_plus_shot
+        elif (action_id == 7):
+            self.func_action = self.left_plus_shot
+        elif (action_id == 8):
+            self.func_action = self.right_plus_shot
+        elif (action_id == 9):
+            self.func_action = self.shot
+        
+
+
+
+    def up(self):
+        self.last_direction = self.dir_possible[3]
+        if self.parent.can_move_to_pos(self.pos + self.last_direction) :
+                    self.pos = self.pos + self.last_direction
+                    self.sprite.update_field_pos(self.pos)
+        
+
+    def left(self):
+        self.last_direction = self.dir_possible[1]
+        if self.parent.can_move_to_pos(self.pos + self.last_direction) :
+                    self.pos = self.pos + self.last_direction
+                    self.sprite.update_field_pos(self.pos)
+        
+
+    def right(self):
+        self.last_direction = self.dir_possible[0]
+        if self.parent.can_move_to_pos(self.pos + self.last_direction) :
+                    self.pos = self.pos + self.last_direction
+                    self.sprite.update_field_pos(self.pos)
+        
+
+    def down(self):
+        self.last_direction = self.dir_possible[2]
+        if self.parent.can_move_to_pos(self.pos + self.last_direction) :
+                    self.pos = self.pos + self.last_direction
+                    self.sprite.update_field_pos(self.pos)
+
+    def stay(self):
+        pass
+
+    def up_plus_shot(self):
+        self.last_direction = self.dir_possible[3]
+        if self.parent.can_move_to_pos(self.pos + self.last_direction) :
+                    self.pos = self.pos + self.last_direction
+                    self.sprite.update_field_pos(self.pos)
+        self.shot()
+
+    def left_plus_shot(self):
+        self.last_direction = self.dir_possible[1]
+        if self.parent.can_move_to_pos(self.pos + self.last_direction) :
+                    self.pos = self.pos + self.last_direction
+                    self.sprite.update_field_pos(self.pos)
+        self.shot()
+
+    def right_plus_shot(self):
+        self.last_direction = self.dir_possible[0]
+        if self.parent.can_move_to_pos(self.pos + self.last_direction) :
+                    self.pos = self.pos + self.last_direction
+                    self.sprite.update_field_pos(self.pos)
+        self.shot()
+
+    def down_plus_shot(self):
+        self.last_direction = self.dir_possible[2]
+        if self.parent.can_move_to_pos(self.pos + self.last_direction) :
+                    self.pos = self.pos + self.last_direction
+                    self.sprite.update_field_pos(self.pos)
+        self.shot()
+
+
+
+
+""" def move_DQN(self):
+        self.timer -= 1
+        if self.timer == 0:
+            pass
+        self.timer = TIMER_EVENT_PLAYER"""
+    
+""" def move(self):
+        for vec in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1)]):
+            if vec == self.last_direction:
+                return 
+        next_pos = self.pos + self.last_direction
+        if self.parent.can_move_to_pos(next_pos) :
+            self.pos = next_pos
+        # else сменить направление#
+        self.sprite.update_field_pos(self.pos)
+        
+"""
+
+""" def randomMove(self, nextPos):
             self.timer -= 1
             if self.timer == 0:
                 dirMove = Vec2((nextPos.x - self.pos.x), (nextPos.y - self.pos.y))
@@ -137,19 +258,7 @@ class Player:
                             self.last_direction = Vec2(-1, 0)
                             self.sprite.update_field_pos(self.pos)
                             self.shot()
-                self.timer = TIMER_EVENT_PLAYER
-    
-""" def move(self):
-        for vec in ([Vec2(1, 1), Vec2(-1, -1), Vec2(-1, 1), Vec2(1, -1)]):
-            if vec == self.last_direction:
-                return 
-        next_pos = self.pos + self.last_direction
-        if self.parent.can_move_to_pos(next_pos) :
-            self.pos = next_pos
-        # else сменить направление#
-        self.sprite.update_field_pos(self.pos)
-        
-"""
+                self.timer = TIMER_EVENT_PLAYER"""
 
         
             

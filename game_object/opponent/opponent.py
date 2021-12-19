@@ -58,8 +58,8 @@ class Opponent:
         self.timer_bul = TIMER_BULLET_OPPONENT
 
     def random_move(self, next_pos):#, draw_path
-        self.timer -= 1
-        if self.timer == 0:
+        #self.timer -= 1
+        #if self.timer == 0:
             """rand_dir = self.dir_possible[random.randint(0, 3)]
             self.rand_dir = rand_dir
             next_pos = self.pos + self.rand_dir"""
@@ -72,7 +72,7 @@ class Opponent:
                 self.sprite.update_field_pos(self.pos)
                 self.random_shot()
             # else сменить направление#
-            self.timer = TIMER_EVENT_OPPONENT
+            #self.timer = TIMER_EVENT_OPPONENT
             #draw_path()
 
     def random_shot(self):
@@ -85,8 +85,8 @@ class Opponent:
             self.timer_bul = TIMER_BULLET_OPPONENT
     
     def move(self):
-        self.stupid_timer -= 1
-        if self.stupid_timer == 0:
+        #self.stupid_timer -= 1
+        #if self.stupid_timer == 0:
             rand_dir = self.dir_possible[random.randint(0, 3)]
             self.rand_dir = rand_dir
             next_pos = self.pos + self.rand_dir
@@ -98,5 +98,5 @@ class Opponent:
                 self.random_shot()
             # else сменить направление#
             self.sprite.update_field_pos(self.pos) 
-            self.stupid_timer = TIMER_EVENT_OPPONENT
+            #self.stupid_timer = TIMER_EVENT_OPPONENT
         

@@ -37,6 +37,7 @@ class Field:
         self.surface_opponent.set_alpha(150)
         self.score_player = 0
         self.score_opponent = 0
+        self.number_player_dodges = 0
 
 
         #--add player--

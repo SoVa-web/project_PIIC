@@ -17,6 +17,7 @@ from game_object.astare.astare import Astare
 import random
 from game_object.alphabeta.alphabeta import MinimaxAlphaBeta
 from game_object.expectimax.expectimax import Expectimax
+from game_object.DQN.DQN import DQN
 pygame.init()
 
 
@@ -47,6 +48,7 @@ class GameLoop:
         self.strategyOpponents()
 
         self.filename = "result_games.csv"
+        self.dqn = DQN(self.field.players[0], self.field.opponents, self.field.stupid_opponents)
         
     def process_events(self):
         for event in pygame.event.get(): #--event queue--
@@ -93,7 +95,10 @@ class GameLoop:
             if frame == config.MOVE_EVERY_NTH_FRAME:
                 for player  in self.field.players:
                     #self.strategyPlayer(player)
-                    self.minimax(player)
+                    #self.minimax(player)
+                    self.dqn.update_state(self.field.players[0], self.field.opponents, self.field.stupid_opponents, 
+                    self.field.score_player, self.field.number_player_dodges, len(self.field.barriers))
+                    self.dqn.choosing_action()
                 for opponent in self.field.opponents:
                     self.strategyOpponents()
                 for opponent in self.field.stupid_opponents:
@@ -119,12 +124,12 @@ class GameLoop:
             winner = "Player"
             winner_index = 1
 
-        tm_end = time.time() - tm_start
+        """tm_end = time.time() - tm_start
         with open(self.filename, "a", newline="") as file:
             #expectimax - 1, alphabeta - 0
             result = [winner_index, self.field.score_player, round(tm_end), 1]
             writer = csv.writer(file)
-            writer.writerow(result)
+            writer.writerow(result)"""
         result = Result(screen_end, winner)
         GameLoop().start()
         """while self.end and not self.is_running:

@@ -68,6 +68,8 @@ class Bullet:
                     self.parent.players.remove(i)
                     self.explosion_show()
                     self.parent.score_opponent += 5
+                else:
+                    self.parent.number_player_dodges += 1
             self.sprite.kill()
             self.parent.bullets.remove(self)
         print("Result scores of Player: ")
