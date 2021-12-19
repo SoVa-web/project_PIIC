@@ -72,8 +72,8 @@ class Bullet:
                     self.parent.number_player_dodges += 1
             self.sprite.kill()
             self.parent.bullets.remove(self)
-        print("Result scores of Player: ")
-        print(self.parent.score_player)
+        #print("Result scores of Player: ")
+        #print(self.parent.score_player)
         self.pos = next_pos         
 
     def explosion_show(self):

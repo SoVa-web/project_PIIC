@@ -178,7 +178,7 @@ class Graph:
         for x in range(FIELD_W_SIZE*FIELD_H_SIZE):
             for y in range(FIELD_W_SIZE*FIELD_H_SIZE):
                 distances[x][y] = math.sqrt(math.pow((self.set_nodes[x].x - self.set_nodes[y].x), 2) + math.pow((self.set_nodes[x].y - self.set_nodes[y].y), 2))
-        print("Time hueristics : "+ str((time.time()-sp)) + "\n")
+        #print("Time hueristics : "+ str((time.time()-sp)) + "\n")
         return distances
 
         

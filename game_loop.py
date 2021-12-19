@@ -4,6 +4,7 @@ import itertools
 import sys
 import csv
 import math
+import json
 
 import config
 from config import WIDTH, HEIGHT, FPS, FIELD_W_SIZE, FIELD_H_SIZE
@@ -124,6 +125,28 @@ class GameLoop:
             winner = "Player"
             winner_index = 1
 
+        obj_result = {
+            "last_action": self.dqn.last_action,
+            "last_state": self.dqn.last_state,
+            "weight": self.dqn.matrix_state_action_weight,
+            "input": self.dqn.input,
+            "outputScore": self.dqn.output,
+            "winner": winner
+        }
+
+        neural = {
+            "last_action": self.dqn.last_action,
+            "last_state": self.dqn.last_state,
+            "weight": self.dqn.matrix_state_action_weight,
+            "input": self.dqn.input,
+            "outputScore": self.dqn.output
+        }
+        with open('logs_result_game.json', "a") as file:
+            json.dump(obj_result, file, separators=(',', ': '))
+            json.dump('\n', file, separators=('\n', '\n'))
+
+        with open('neural_model.json', "w") as file:
+            json.dump(neural, file, separators=(',', ': '))
         """tm_end = time.time() - tm_start
         with open(self.filename, "a", newline="") as file:
             #expectimax - 1, alphabeta - 0
